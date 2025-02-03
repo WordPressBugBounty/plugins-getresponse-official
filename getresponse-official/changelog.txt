@@ -1,0 +1,78 @@
+*** Changelog ***
+
+2025-01-21 - version 1.3.11
+* Fixed ContactForm 7 checkbox and select fields handling
+
+2025-01-07 - version 1.3.10
+* Added support for Wordpress 6.7.1
+
+2024-07-31 - version 1.3.9
+* Fixed accessing to empty terms
+
+2024-07-18 - version 1.3.8
+* Fixed error when receiving float instead of int
+
+2024-07-03 - version 1.3.7
+* Fixed convert date on null
+* Make sure that item in order is product
+
+2024-05-22 - version 1.3.6
+* Fixed issue with session
+
+2024-04-11 - version 1.3.5
+* Verified, that WooCommerce plugin is active before profile_update hook handling
+
+2024-03-26 - version 1.3.4
+* Fixed security issues
+
+2024-02-15 - version 1.3.3
+* Fixed ContactForm 7 custom fields handling
+
+2024-01-18 - version 1.3.2
+* Fix issue with session
+
+2024-01-10 - version 1.3.1
+* Fix issue with type mismatch in order->get_total()
+
+2024-01-08 - version 1.3.0
+* Handled WooCommerce customer custom fields
+
+2023-11-27 - version 1.2.2
+* Added Web Connect events for cart and order
+
+2023-11-08 - version 1.2.1
+* Fixed an issue with the webhook when creating a new user directly from the dashboard
+* Fixed Web Connect integration
+
+2023-09-29 - version 1.2.0
+* feat: order webhook can add contact
+
+2023-09-20 - version 1.1.4
+* fix in recommendation integration
+
+2023-09-12 - version 1.1.3
+* handle tags in ContactForm 7 integration
+
+2023-08-24 - version 1.1.2
+* fixed WebConnect snippet
+
+2023-08-16 - version 1.1.1
+* enabled TrackingCode user identification.
+
+2023-07-26 - version 1.1.0
+* marketing consent on checkout form
+* marketing consent on WooCommerce registration form
+
+2023-07-21 - version 1.0.3
+* fix session for admin
+* cast quantity in cart and order handlers
+* sites endpoint with get_home_url method for fetching urls
+
+2023-07-10 - version 1.0.2
+* Recommendation payload fix
+
+2023-06-13 - version 1.0.1
+* Added logger
+
+2023-06-06 - version 1.0.0
+* Initial version

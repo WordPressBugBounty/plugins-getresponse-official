@@ -2,9 +2,9 @@
 Contributors: GetResponse
 Tags: getresponse, email marketing, ecommerce, marketing, newsletter
 Requires at least: 5.6
-Tested up to: 6.6
+Tested up to: 6.7.1
 Requires PHP: 7.4
-Stable tag: 1.3.9
+Stable tag: 1.3.11
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -163,6 +163,11 @@ How to set up the integration in GetResponse:
 For more detailed instructions, please visit [our dedicated FAQ](https://www.getresponse.com/help/how-to-integrate-wordpress-with-getresponse.html).
 
 == Changelog ==
+= 1.3.11 =
+* Fixed ContactForm 7 checkbox and select fields handling
+
+= 1.3.10 =
+* Added support for Wordpress 6.7.1
 
 = 1.3.9 =
 * Fixed accessing to empty terms

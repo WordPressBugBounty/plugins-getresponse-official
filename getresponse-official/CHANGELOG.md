@@ -1,6 +1,12 @@
 Changelog
 =========
 
+#### 1.3.11 - 21-01-2025
+- Fixed ContactForm 7 checkbox and select fields handling
+
+#### 1.3.10 - 07-01-2025
+- Added support for Wordpress 6.7.1
+
 #### 1.3.9 - 31-07-2024
 - Fixed accessing to empty terms
 
