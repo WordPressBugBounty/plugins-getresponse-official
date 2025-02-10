@@ -90,9 +90,10 @@ class Woocommerce_Integration implements Integration {
     }
 
     public function handle_cart_upsert(): void {
-        if ( ! empty( $_GET['grcart'] ) ) {
+        if ( ! empty( $_GET['grcart'] ) || false === self::is_woo_commerce_installed() ) {
             return;
         }
+
         $cart = WC()->cart;
 
         if ( $cart === null ) {
@@ -171,7 +172,13 @@ class Woocommerce_Integration implements Integration {
     }
 
     public function rebuild_cart(): bool {
+
+        if ( false === self::is_woo_commerce_installed() ) {
+            return false;
+        }
+
         $cart = WC()->cart;
+
         if ( empty( $cart ) ) {
             return false;
         }

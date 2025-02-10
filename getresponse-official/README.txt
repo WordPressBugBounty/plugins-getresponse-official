@@ -4,7 +4,7 @@ Tags: getresponse, email marketing, ecommerce, marketing, newsletter
 Requires at least: 5.6
 Tested up to: 6.7.1
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -163,6 +163,10 @@ How to set up the integration in GetResponse:
 For more detailed instructions, please visit [our dedicated FAQ](https://www.getresponse.com/help/how-to-integrate-wordpress-with-getresponse.html).
 
 == Changelog ==
+
+= 1.4.1 =
+* Fixed WooCommerce cart handler
+
 = 1.4.0 =
 * Add rebuilding abandoned cart
 

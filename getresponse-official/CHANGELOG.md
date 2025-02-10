@@ -1,6 +1,9 @@
 Changelog
 =========
 
+#### 1.4.1 - 10-02-2025
+- Fixed WooCommerce cart handler
+
 #### 1.4.0 - 31-01-2025
 - Add rebuilding abandoned cart
 
