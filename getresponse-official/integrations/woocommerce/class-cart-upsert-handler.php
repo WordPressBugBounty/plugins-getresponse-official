@@ -113,7 +113,8 @@ class Cart_Upsert_Handler {
             round( (float) $cart->get_total( '' ), 2 ),
             round( (float) $cart->get_total( '' ), 2 ),
             get_woocommerce_currency(),
-            wc_get_cart_url()
+            $this->build_url( $cart ),
+            $_COOKIE['gaVisitorUuid'] ?? null
         );
 
         if ( ! $model->is_valuable() ) {
@@ -121,5 +122,21 @@ class Cart_Upsert_Handler {
         }
 
         $this->gr_hook_service->send_callback( $this->gr_configuration, $model );
+    }
+
+    private function build_url( WC_Cart $cart ): string {
+        $payload = [];
+
+        foreach ( $cart->get_cart() as $cart_item ) {
+            $payload['cartItems'][] = [
+                'p' => $cart_item['product_id'],
+                'q' => $cart_item['quantity'],
+                'v' => $cart_item['variation_id'],
+            ];
+        }
+
+        $payload['cartId'] = $this->gr_cart_service->get_cart_id();
+        // phpcs:ignore
+        return home_url( '?grcart=' . base64_encode( wp_json_encode( $payload ) ) );
     }
 }

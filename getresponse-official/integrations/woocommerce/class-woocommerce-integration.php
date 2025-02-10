@@ -62,6 +62,8 @@ class Woocommerce_Integration implements Integration {
         add_action( 'woocommerce_update_customer', [ $this, 'handle_customer_upsert' ], 10 );
 
         add_action( 'profile_update', [ $this, 'handle_customer_upsert_in_admin' ] );
+
+        add_action( 'wp_loaded', [ $this, 'rebuild_cart' ] );
     }
 
     public function handle_product_upsert( int $product_id ): void {
@@ -88,7 +90,9 @@ class Woocommerce_Integration implements Integration {
     }
 
     public function handle_cart_upsert(): void {
-
+        if ( ! empty( $_GET['grcart'] ) ) {
+            return;
+        }
         $cart = WC()->cart;
 
         if ( $cart === null ) {
@@ -164,5 +168,32 @@ class Woocommerce_Integration implements Integration {
         );
 
         $handler->handle( $customer );
+    }
+
+    public function rebuild_cart(): bool {
+        $cart = WC()->cart;
+        if ( empty( $cart ) ) {
+            return false;
+        }
+
+        $gr_cart = $_GET['grcart'] ?? null;
+        if ( empty( $gr_cart ) ) {
+            return false;
+        }
+
+        // phpcs:ignore
+        $decoded_gr_cart = json_decode( base64_decode( $gr_cart ), true );
+        if ( ! $decoded_gr_cart || empty( $decoded_gr_cart['cartItems'] ) || empty( $decoded_gr_cart['cartId'] ) ) {
+            return wp_safe_redirect( wc_get_cart_url() );
+        }
+
+        $cart->empty_cart();
+        foreach ( $decoded_gr_cart['cartItems'] as $item ) {
+            $cart->add_to_cart( $item['p'], $item['q'], $item['v'] );
+        }
+
+        $this->gr_cart_service->set_cart_id( $decoded_gr_cart['cartId'] );
+
+        return wp_safe_redirect( wc_get_cart_url() );
     }
 }

@@ -19,4 +19,8 @@ class Gr_Cart_Service {
         $cart_id = Functions::session_get_and_clear( self::CART_ID_SESSION_NAME );
         return null === $cart_id ? null : (int) $cart_id;
     }
+
+    public function set_cart_id( int $cart_id ): void {
+        Functions::session_set( self::CART_ID_SESSION_NAME, $cart_id );
+    }
 }

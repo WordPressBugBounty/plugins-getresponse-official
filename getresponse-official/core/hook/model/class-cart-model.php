@@ -16,6 +16,7 @@ class Cart_Model implements Model {
     private float $total_tax_price;
     private string $currency;
     private string $url;
+    private ?string $visitor_uuid;
     private ?string $created_at;
     private ?string $updated_at;
 
@@ -30,6 +31,7 @@ class Cart_Model implements Model {
         float $total_tax_price,
         string $currency,
         string $url,
+        ?string $visitor_uuid = null,
         ?string $created_at = null,
         ?string $updated_at = null
     ) {
@@ -40,6 +42,7 @@ class Cart_Model implements Model {
         $this->total_tax_price = $total_tax_price;
         $this->currency        = $currency;
         $this->url             = $url;
+        $this->visitor_uuid    = $visitor_uuid;
         $this->created_at      = $created_at;
         $this->updated_at      = $updated_at;
     }
@@ -60,6 +63,7 @@ class Cart_Model implements Model {
             'total_price_tax' => $this->total_tax_price,
             'currency'        => $this->currency,
             'url'             => $this->url,
+            'visitor_uuid'    => $this->visitor_uuid,
             'created_at'      => $this->created_at,
             'updated_at'      => $this->updated_at,
         ];
@@ -67,6 +71,6 @@ class Cart_Model implements Model {
 
 
     public function is_valuable(): bool {
-        return ! empty( $this->id ) && ! empty( $this->customer->getEmail() );
+        return ! empty( $this->id ) && ! empty( $this->customer->getEmail() ) || ! empty( $this->visitor_uuid );
     }
 }

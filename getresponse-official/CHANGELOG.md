@@ -1,6 +1,9 @@
 Changelog
 =========
 
+#### 1.4.0 - 31-01-2025
+- Add rebuilding abandoned cart
+
 #### 1.3.11 - 21-01-2025
 - Fixed ContactForm 7 checkbox and select fields handling
 
