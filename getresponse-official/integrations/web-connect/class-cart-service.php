@@ -71,7 +71,7 @@ class Cart_Service {
                 round( wc_get_price_including_tax( $product, [ 'price' => $product->get_price() ] ), 2 ),
                 $cart_item['data']->get_sku(),
                 get_woocommerce_currency(),
-                (int) round( $cart_item['quantity'] ),
+                (int) round( (float) $cart_item['quantity'] ),
                 $this->get_product_categories( $product )
             );
         }

@@ -1,6 +1,9 @@
 Changelog
 =========
 
+#### 1.4.2 - 24-02-2025
+- Fixed WebConnect event for cart (PHP8.x)
+
 #### 1.4.1 - 10-02-2025
 - Fixed WooCommerce cart handler
 
