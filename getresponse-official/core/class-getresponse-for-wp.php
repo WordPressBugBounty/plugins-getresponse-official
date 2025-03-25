@@ -43,11 +43,50 @@ class Getresponse_For_Wp {
         try {
             $this->extend_api();
             $this->register_marketing_consent_meta();
+            $this->register_updated_at_meta();
             $this->register_integrations();
             $this->check_if_old_plugin_is_installed();
+            add_filter( 'rest_user_query', [ $this, 'add_updated_at_filter' ], 10, 2 );
         } catch ( Exception $exception ) {
             $this->logger->error( 'Run error', Functions::get_error_context( $exception ) );
         }
+    }
+
+    public function set_gr_updated_at_for_existing_users() {
+        global $wpdb;
+
+        $meta_key     = Gr_Configuration::USER_UPDATED_AT_META_NAME;
+        $current_time = current_time( 'mysql' );
+
+        $start_time = microtime( true );
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO {$wpdb->usermeta} (user_id, meta_key, meta_value)
+                        SELECT u.ID, %s, %s
+                        FROM {$wpdb->users} u
+                        LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id AND um.meta_key = %s
+                        WHERE um.user_id IS NULL;",
+                $meta_key,
+                $current_time,
+                $meta_key
+            )
+        );
+        $execution_time = microtime( true ) - $start_time;
+
+        $this->logger->info( 'Set GR_updated_at for ' . $wpdb->rows_affected . ' existing users. Execution time: ' . $execution_time . ' seconds' );
+    }
+
+    public function delete_gr_updated_at_metafield() {
+        global $wpdb;
+
+        $meta_key = Gr_Configuration::USER_UPDATED_AT_META_NAME;
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM {$wpdb->usermeta} WHERE meta_key = %s",
+                $meta_key
+            )
+        );
     }
 
     private function register_integrations(): void {
@@ -103,6 +142,27 @@ class Getresponse_For_Wp {
         }
     }
 
+    public function add_updated_at_filter( $args, $request ) {
+        $filter_name = Gr_Configuration::USER_UPDATED_AFTER_FILTER_NAME;
+
+        if ( ! empty( $request[ $filter_name ] ) ) {
+            $args['meta_query'][] = [
+                'relation' => 'OR',
+                [
+					'key'     => Gr_Configuration::USER_UPDATED_AT_META_NAME,
+					'value'   => sanitize_text_field( $request[ $filter_name ] ),
+					'compare' => '>',
+					'type'    => 'DATETIME',
+                ],
+                [
+                    'key'     => Gr_Configuration::USER_UPDATED_AT_META_NAME,
+                    'compare' => 'NOT EXISTS',
+                ],
+            ];
+        }
+        return $args;
+    }
+
     public function extend_api(): void {
 
         add_action(
@@ -124,6 +184,24 @@ class Getresponse_For_Wp {
             ]
         );
     }
+
+    private function register_updated_at_meta() {
+        register_meta(
+            'user',
+            Gr_Configuration::USER_UPDATED_AT_META_NAME,
+            [
+				'type'         => 'string',
+				'description'  => 'Last modified date',
+				'single'       => true,
+				'show_in_rest' => [
+					'schema' => [
+						'type' => 'string',
+					],
+				],
+			]
+        );
+    }
+
 
     private function init_logger(): void {
 

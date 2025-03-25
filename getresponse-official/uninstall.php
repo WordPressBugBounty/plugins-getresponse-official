@@ -26,6 +26,7 @@
  */
 
 // If uninstall not called from WordPress, then exit.
+use GR\Wordpress\Core\Getresponse_For_Wp;
 use GR\Wordpress\Core\Gr_Rest_Api_Service;
 use GR\Wordpress\Core\logger\Gr_Logger_Configuration;
 
@@ -37,3 +38,4 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 (new Gr_Rest_Api_Service())->delete_configuration();
 (new Gr_Logger_Configuration())->delete_configuration();
+(new Getresponse_For_Wp())->delete_gr_updated_at_metafield();

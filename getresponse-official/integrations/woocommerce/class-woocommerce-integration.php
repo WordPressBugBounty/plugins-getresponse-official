@@ -64,6 +64,8 @@ class Woocommerce_Integration implements Integration {
         add_action( 'profile_update', [ $this, 'handle_customer_upsert_in_admin' ] );
 
         add_action( 'wp_loaded', [ $this, 'rebuild_cart' ] );
+
+        add_filter( 'woocommerce_rest_customer_query', [ $this, 'add_updated_at_filter' ], 10, 2 );
     }
 
     public function handle_product_upsert( int $product_id ): void {
@@ -202,5 +204,26 @@ class Woocommerce_Integration implements Integration {
         $this->gr_cart_service->set_cart_id( $decoded_gr_cart['cartId'] );
 
         return wp_safe_redirect( wc_get_cart_url() );
+    }
+
+    public function add_updated_at_filter( $args, $request ) {
+        $filter_name = Gr_Configuration::USER_UPDATED_AFTER_FILTER_NAME;
+        if ( ! empty( $request[ $filter_name ] ) ) {
+            $timestamp            = sanitize_text_field( strtotime( $request[ $filter_name ] ) );
+            $args['meta_query'][] = [
+                'relation' => 'OR',
+				[
+					'key'     => 'last_update',
+					'value'   => $timestamp,
+					'compare' => '>',
+					'type'    => 'numeric',
+				],
+				[
+					'key'     => 'last_update',
+					'compare' => 'NOT EXISTS',
+				],
+            ];
+        }
+        return $args;
     }
 }

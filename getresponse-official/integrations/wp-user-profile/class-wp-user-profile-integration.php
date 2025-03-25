@@ -27,8 +27,14 @@ class WP_User_Profile_Integration implements Integration {
     }
 
     public function init(): void {
-        add_action( 'edit_user_profile', array( $this, 'extend_user_profile' ) );
-        add_action( 'profile_update', array( $this, 'handle_profile_update' ) );
+        add_action( 'edit_user_profile', [ $this, 'extend_user_profile' ] );
+        add_action( 'profile_update', [ $this, 'handle_profile_update' ], 10 );
+        add_action( 'profile_update', [ $this, 'set_updated_at' ], 20 );
+        add_action( 'user_register', [ $this, 'set_updated_at' ], 20 );
+    }
+
+    public function set_updated_at( $user_id ): void {
+        update_user_meta( $user_id, Gr_Configuration::USER_UPDATED_AT_META_NAME, current_time( 'mysql' ) );
     }
 
     public function handle_profile_update( int $user_id ): void {

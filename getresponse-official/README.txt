@@ -4,7 +4,7 @@ Tags: getresponse, email marketing, ecommerce, marketing, newsletter
 Requires at least: 5.6
 Tested up to: 6.7.1
 Requires PHP: 7.4
-Stable tag: 1.4.2
+Stable tag: 1.5.0
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -163,6 +163,9 @@ How to set up the integration in GetResponse:
 For more detailed instructions, please visit [our dedicated FAQ](https://www.getresponse.com/help/how-to-integrate-wordpress-with-getresponse.html).
 
 == Changelog ==
+
+= 1.5.0 =
+* Added support for filtering users and customers by the gr_updated_after parameter in /wp/v2/users and /wc/v3/customers API endpoints
 
 = 1.4.2 =
 * Fixed WebConnect event for cart (PHP8.x)

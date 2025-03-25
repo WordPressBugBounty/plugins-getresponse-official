@@ -1,6 +1,9 @@
 Changelog
 =========
 
+#### 1.5.0 - 20-03-2025
+- Added support for filtering users and customers by the gr_updated_after parameter in /wp/v2/users and /wc/v3/customers API endpoints
+
 #### 1.4.2 - 24-02-2025
 - Fixed WebConnect event for cart (PHP8.x)
 

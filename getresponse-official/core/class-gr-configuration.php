@@ -6,7 +6,9 @@ namespace GR\Wordpress\Core;
 
 class Gr_Configuration {
 
-    public const MARKETING_CONSENT_META_NAME = 'gr_marketing_consent';
+    public const MARKETING_CONSENT_META_NAME    = 'gr_marketing_consent';
+    public const USER_UPDATED_AT_META_NAME      = 'gr_updated_at';
+    public const USER_UPDATED_AFTER_FILTER_NAME = 'gr_updated_after';
 
     public const CSS_MARKETING_CONSENT_WRAPPER_CLASS  = 'gr-marketing-consent';
     public const CSS_MARKETING_CONSENT_CHECKBOX_CLASS = 'gr-marketing-consent-checkbox';
