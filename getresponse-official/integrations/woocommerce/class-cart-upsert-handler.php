@@ -88,9 +88,9 @@ class Cart_Upsert_Handler {
 
             $lines[] = new Line_Model(
                 (int) $variant_id,
-                round( wc_get_price_including_tax( $product, [ 'price' => $product->get_price() ] ), 2 ),
-                round( wc_get_price_including_tax( $product, [ 'price' => $product->get_price() ] ), 2 ),
-                (int) round( $cart_item['quantity'] ),
+                round( (float) wc_get_price_including_tax( $product, [ 'price' => $product->get_price() ] ), 2 ),
+                round( (float) wc_get_price_including_tax( $product, [ 'price' => $product->get_price() ] ), 2 ),
+                (int) round( (float) $cart_item['quantity'] ),
                 $cart_item['data']->get_sku()
             );
         }

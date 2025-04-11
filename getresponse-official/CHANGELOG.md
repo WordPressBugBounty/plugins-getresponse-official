@@ -1,6 +1,9 @@
 Changelog
 =========
 
+#### 1.5.1 - 11-04-2025
+- Fixed arguments for rounding function (PHP8.x)
+
 #### 1.5.0 - 20-03-2025
 - Added support for filtering users and customers by the gr_updated_after parameter in /wp/v2/users and /wc/v3/customers API endpoints
 

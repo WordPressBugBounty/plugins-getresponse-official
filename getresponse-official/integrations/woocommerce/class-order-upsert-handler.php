@@ -124,7 +124,7 @@ class Order_Upsert_Handler {
                     (int) $product->get_id(),
                     round( $product_price, 2 ),
                     round( $product_price, 2 ),
-                    (int) round( $item->get_quantity() ),
+                    (int) round( (float) $item->get_quantity() ),
                     $product->get_sku()
                 );
             }

@@ -68,7 +68,7 @@ class Cart_Service {
             $products[] = new Product_Model(
                 $product->get_id(),
                 $product->get_name(),
-                round( wc_get_price_including_tax( $product, [ 'price' => $product->get_price() ] ), 2 ),
+                round( (float) wc_get_price_including_tax( $product, [ 'price' => $product->get_price() ] ), 2 ),
                 $cart_item['data']->get_sku(),
                 get_woocommerce_currency(),
                 (int) round( (float) $cart_item['quantity'] ),

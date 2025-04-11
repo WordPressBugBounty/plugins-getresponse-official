@@ -66,7 +66,7 @@ class Order_Service {
                 $product_price,
                 $item->get_product()->get_sku(),
                 get_woocommerce_currency(),
-                (int) round( $item->get_quantity() ),
+                (int) round( (float) $item->get_quantity() ),
                 $this->get_product_categories( $item )
             );
         }
