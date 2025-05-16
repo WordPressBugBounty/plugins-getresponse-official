@@ -1,6 +1,9 @@
 Changelog
 =========
 
+#### 1.5.2 - 12-05-2025
+- Added support for Wordpress 6.8.1
+
 #### 1.5.1 - 11-04-2025
 - Fixed arguments for rounding function (PHP8.x)
 
