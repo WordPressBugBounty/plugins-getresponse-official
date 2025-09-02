@@ -10,10 +10,7 @@
     <file>getresponse-for-wp.php</file>
 
     <rule ref="WordPress-Core">
-        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent" />
-        <exclude name="WordPress.WhiteSpace.PrecisionAlignment" />
         <exclude name="WordPress.PHP.YodaConditions" />
-        <exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
     </rule>
 
     <rule ref="WordPress-Extra">

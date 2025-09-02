@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GR\Wordpress\Integrations\ContactForm7;
+namespace GR\WordPress\Integrations\ContactForm7;
 
 use Exception;
-use GR\Wordpress\Core\Functions;
-use GR\Wordpress\Core\Gr_Configuration;
-use GR\Wordpress\Core\Hook\Gr_Hook_Service;
-use GR\Wordpress\Core\Hook\Model\Contact_Model;
-use GR\Wordpress\Integrations\Integration;
+use GR\WordPress\Core\Functions;
+use GR\WordPress\Core\Gr_Configuration;
+use GR\WordPress\Core\Hook\Gr_Hook_Service;
+use GR\WordPress\Core\Hook\Model\Contact_Model;
+use GR\WordPress\Integrations\Integration;
 use Psr\Log\LoggerInterface;
 
 class Contact_Form_7_Integration implements Integration {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GR\Wordpress\Core\Hook\Model;
+namespace GR\WordPress\Core\Hook\Model;
 
 interface Model {
 
-    public function to_api_callback(): array;
+	public function to_api_callback(): array;
 }

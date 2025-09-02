@@ -1,6 +1,9 @@
 Changelog
 =========
 
+#### 1.5.3 - 2025-09-02
+- Improved cart management with additional cookie cart_id storage
+
 #### 1.5.2 - 12-05-2025
 - Added support for Wordpress 6.8.1
 

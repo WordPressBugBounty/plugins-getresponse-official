@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GR\Wordpress\Integrations;
+namespace GR\WordPress\Integrations;
 
 interface Integration {
 
-    public function init(): void;
+	public function init(): void;
 }

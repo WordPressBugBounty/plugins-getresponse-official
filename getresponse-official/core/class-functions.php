@@ -2,124 +2,124 @@
 
 declare(strict_types=1);
 
-namespace GR\Wordpress\Core;
+namespace GR\WordPress\Core;
 
 use Exception;
 
 class Functions {
 
-    public static function get_allowed_html_elements(): array {
-        return [
-            'label' => [],
-            'p'     => [],
-            'input' => [
-                'type'  => [ 'checkbox' ],
-                'name'  => [],
-                'value' => [],
-                'class' => [],
-            ],
-            'span'  => [],
-            'br'    => [],
-        ];
-    }
 
-    public static function get_wp_version(): string {
-        require ABSPATH . WPINC . '/version.php';
-        return $wp_version;
-    }
+	public static function get_allowed_html_elements(): array {
+		return array(
+			'label' => array(),
+			'p'     => array(),
+			'input' => array(
+				'type'  => array( 'checkbox' ),
+				'name'  => array(),
+				'value' => array(),
+				'class' => array(),
+			),
+			'span'  => array(),
+			'br'    => array(),
+		);
+	}
 
-    public static function get_php_version(): string {
-        return PHP_VERSION;
-    }
+	public static function get_wp_version(): string {
+		require ABSPATH . WPINC . '/version.php';
+		return $wp_version;
+	}
 
-    public static function get_plugin_version(): string {
-        return GETRESPONSE_FOR_WP_VERSION;
-    }
+	public static function get_php_version(): string {
+		return PHP_VERSION;
+	}
 
-    public static function get_error_context( Exception $exception ): array {
-        return [
-            'file'    => basename( $exception->getFile() ),
-            'line'    => $exception->getLine(),
-            'message' => $exception->getMessage(),
-            'trace'   => $exception->getTraceAsString(),
-        ];
-    }
+	public static function get_plugin_version(): string {
+		return GETRESPONSE_FOR_WP_VERSION;
+	}
 
-    public static function add_marketing_consent_checkbox( string $marketing_consent_text ): void {
+	public static function get_error_context( Exception $exception ): array {
+		return array(
+			'file'    => basename( $exception->getFile() ),
+			'line'    => $exception->getLine(),
+			'message' => $exception->getMessage(),
+			'trace'   => $exception->getTraceAsString(),
+		);
+	}
 
-        if ( is_user_logged_in() ) {
-            return;
-        }
+	public static function add_marketing_consent_checkbox( string $marketing_consent_text ): void {
 
-        if ( empty( $marketing_consent_text ) ) {
-            return;
-        }
+		if ( is_user_logged_in() ) {
+			return;
+		}
 
-        ob_start();
+		if ( empty( $marketing_consent_text ) ) {
+			return;
+		}
 
-        echo sprintf( '<p class="%s">', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_WRAPPER_CLASS ) );
-        echo '<label>';
-        echo sprintf( '<input type="checkbox" name="%s" value="1" class="%s" />', esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME ), esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ) );
-        echo sprintf( '<span class="%s">%s</span>', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ), esc_attr( $marketing_consent_text ) );
-        echo '</label>';
-        echo '</p>';
-        echo '<br />';
+		ob_start();
 
-        $html = ob_get_clean();
+		printf( '<p class="%s">', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_WRAPPER_CLASS ) );
+		echo '<label>';
+		printf( '<input type="checkbox" name="%s" value="1" class="%s" />', esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME ), esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ) );
+		printf( '<span class="%s">%s</span>', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ), esc_attr( $marketing_consent_text ) );
+		echo '</label>';
+		echo '</p>';
+		echo '<br />';
 
-        echo wp_kses( $html, self::get_allowed_html_elements() );
-    }
+		$html = ob_get_clean();
 
-    public static function session_set( $key, $value ): void {
-        if ( ! session_id() && ! headers_sent() ) {
-            session_start();
-        }
+		echo wp_kses( $html, self::get_allowed_html_elements() );
+	}
 
-        $session_key   = sanitize_key( $key );
-        $session_value = sanitize_text_field( $value );
+	public static function session_set( $key, $value ): void {
+		if ( ! session_id() && ! headers_sent() ) {
+			session_start();
+		}
 
-        $_SESSION[ $session_key ] = $session_value;
-    }
+		$session_key   = sanitize_key( $key );
+		$session_value = sanitize_text_field( $value );
 
-    public static function session_get( $key ): ?string {
+		$_SESSION[ $session_key ] = $session_value;
+	}
 
-        if ( ! session_id() && ! headers_sent() ) {
-            session_start();
-        }
+	public static function session_get( $key ): ?string {
 
-        return isset( $_SESSION[ $key ] ) ? esc_attr( $_SESSION[ $key ] ) : null;
-    }
+		if ( ! session_id() && ! headers_sent() ) {
+			session_start();
+		}
 
-    public static function session_get_or_set( $key, $value ): ?string {
-        if ( ! session_id() && ! headers_sent() ) {
-            session_start();
-        }
+		return isset( $_SESSION[ $key ] ) ? esc_attr( $_SESSION[ $key ] ) : null;
+	}
 
-        $session_key   = sanitize_key( $key );
-        $session_value = sanitize_text_field( $value );
+	public static function session_get_and_clear( $key ): ?string {
+		if ( ! session_id() && ! headers_sent() ) {
+			session_start();
+		}
 
-        if ( isset( $_SESSION[ $session_key ] ) ) {
-            return esc_attr( $_SESSION[ $session_key ] );
-        }
+		$session_key = sanitize_key( $key );
+		$value       = null;
 
-        $_SESSION[ $session_key ] = $session_value;
+		if ( isset( $_SESSION[ $session_key ] ) ) {
+			$value = sanitize_text_field( $_SESSION[ $session_key ] );
+			unset( $_SESSION[ $session_key ] );
+		}
 
-        return $session_value;
-    }
+		return ! empty( $value ) ? $value : null;
+	}
 
-    public static function session_get_and_clear( $key ): ?string {
-        if ( ! session_id() && ! headers_sent() ) {
-            session_start();
-        }
 
-        $session_key = sanitize_key( $key );
-        $value       = null;
+	public static function set_cookie( $name, $value, $ttl ): void {
+		setcookie( $name, (string) $value, time() + $ttl, '/' );
+	}
 
-        if ( isset( $_SESSION[ $session_key ] ) ) {
-            $value = sanitize_text_field( $_SESSION[ $session_key ] );
-            unset( $_SESSION[ $session_key ] );
-        }
+	public static function get_cookie( $name ): ?string {
+		if ( ! empty( $_COOKIE[ $name ] ) ) {
+			return esc_attr( $_COOKIE[ $name ] );
+		}
+		return null;
+	}
 
-        return ! empty( $value ) ? $value : null;
-    }
+	public static function delete_cookie( $name ): void {
+		setcookie( $name, '', time() - 3600, '/' );
+	}
 }
