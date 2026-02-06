@@ -2,9 +2,9 @@
 Contributors: GetResponse
 Tags: getresponse, email marketing, ecommerce, marketing, newsletter
 Requires at least: 5.6
-Tested up to: 6.8.1
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.5.3
+Stable tag: 1.6.3
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -163,6 +163,25 @@ How to set up the integration in GetResponse:
 For more detailed instructions, please visit [our dedicated FAQ](https://www.getresponse.com/help/how-to-integrate-wordpress-with-getresponse.html).
 
 == Changelog ==
+= 1.6.3 =
+* Added limitation for product image and description
+
+= 1.6.2 =
+* Fix in getting product images
+* Fix in passing marketing consent from profile page
+
+= 1.6.1 =
+* Added support for Wordpress 6.9
+
+= 1.6.0 =
+* Added support for handling marketing consent on checkout-blocks
+
+= 1.5.5 =
+* Improved HTTP request isolation to prevent third-party plugin interference
+
+= 1.5.4 =
+* Fixed error handling
+* Improved validation of configuration updates with remote verification service
 
 = 1.5.3 =
 * Improved cart management with additional cookie cart_id storage

@@ -6,12 +6,14 @@ namespace GR\WordPress\Integrations\Woocommerce;
 
 use GR\WordPress\Core\Functions;
 use GR\WordPress\Core\Gr_Configuration;
+use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
 use GR\WordPress\Core\Hook\Gr_Hook_Service;
 use GR\WordPress\Integrations\Integration;
 use Psr\Log\LoggerInterface;
 use WC_Customer;
 use WC_Order;
 use WC_Product;
+use WP_REST_Request;
 
 class Woocommerce_Integration implements Integration {
 
@@ -61,11 +63,15 @@ class Woocommerce_Integration implements Integration {
 
 		add_action( 'woocommerce_update_customer', array( $this, 'handle_customer_upsert' ), 10 );
 
-		add_action( 'profile_update', array( $this, 'handle_customer_upsert_in_admin' ) );
+		add_action( 'profile_update', array( $this, 'handle_customer_upsert_in_admin' ), 20 );
 
 		add_action( 'wp_loaded', array( $this, 'rebuild_cart' ) );
 
 		add_filter( 'woocommerce_rest_customer_query', array( $this, 'add_updated_at_filter' ), 10, 2 );
+
+		add_action( 'woocommerce_init', array( $this, 'handle_woocommerce_init' ) );
+
+		add_action( 'woocommerce_store_api_checkout_update_customer_from_request', array( $this, 'handle_woocommerce_store_api_checkout_update_customer' ), 10, 2 );
 	}
 
 	public function handle_product_upsert( int $product_id ): void {
@@ -225,5 +231,48 @@ class Woocommerce_Integration implements Integration {
 			);
 		}
 		return $args;
+	}
+
+	public function handle_woocommerce_init(): void {
+		$this->add_woocommerce_marketing_consent_checkbox_for_checkout_blocks();
+	}
+
+	public function handle_woocommerce_store_api_checkout_update_customer( WC_Customer $customer, WP_REST_Request $request ): void {
+		$params                  = $request->get_params();
+		$marketing_consent_field = Gr_Configuration::CHECKOUT_FIELD_MARKETING_CONSENT;
+
+		if ( false === array_key_exists( 'additional_fields', $params ) || false === array_key_exists( $marketing_consent_field, $params['additional_fields'] ) ) {
+			return;
+		}
+
+		$marketing_consent = $params['additional_fields'][ $marketing_consent_field ];
+
+		Gr_User_Marketing_Consent_Buffer::add_user_marketing_consent( $marketing_consent );
+	}
+
+	private function add_woocommerce_marketing_consent_checkbox_for_checkout_blocks(): void {
+		if (
+			is_admin()
+			|| ! function_exists( 'woocommerce_register_additional_checkout_field' )
+			|| is_user_logged_in()
+		) {
+			return;
+		}
+
+		$marketing_consent_text = $this->gr_configuration->get_marketing_consent_text();
+
+		if ( empty( $marketing_consent_text ) ) {
+			return;
+		}
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'       => Gr_Configuration::CHECKOUT_FIELD_MARKETING_CONSENT,
+				'label'    => esc_attr( $marketing_consent_text ),
+				'location' => 'order',
+				'type'     => 'checkbox',
+				'required' => false,
+			)
+		);
 	}
 }

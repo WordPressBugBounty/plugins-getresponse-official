@@ -11,7 +11,6 @@ use GR\WordPress\Core\Hook\Gr_Hook_Client;
 use GR\WordPress\Core\logger\File_Logger;
 use GR\WordPress\Core\logger\Gr_Logger_Configuration;
 use GR\WordPress\Integrations\ContactForm7\Contact_Form_7_Integration;
-use GR\WordPress\Integrations\Recommendation\Recommendation_Integration;
 use GR\WordPress\Integrations\WebConnect\Cart_Service;
 use GR\WordPress\Integrations\WebConnect\Order_Service;
 use GR\WordPress\Integrations\WebConnect\Web_Connect_Integration;
@@ -90,19 +89,18 @@ class Getresponse_For_Wp {
 	}
 
 	private function register_integrations(): void {
+
+		$gr_hook_client   = new Gr_Hook_Client( get_home_url() );
 		$rest_api_service = new Gr_Rest_Api_Service();
 		$gr_configuration = $rest_api_service->get_configuration();
-
-		$gr_hook_client  = new Gr_Hook_Client( get_home_url() );
-		$gr_hook_service = new Gr_Hook_Service( $gr_hook_client );
-		$gr_cart_service = new Gr_Cart_Service();
-		$buffer_service  = new Web_Connect_Buffer_Service();
+		$gr_hook_service  = new Gr_Hook_Service( $gr_hook_client );
+		$gr_cart_service  = new Gr_Cart_Service();
+		$buffer_service   = new Web_Connect_Buffer_Service();
 
 		( new Contact_Form_7_Integration( $gr_configuration, $gr_hook_service, $this->logger ) )->init();
 		( new WP_Registration_Form_Integration( $gr_configuration, $gr_hook_service, $this->logger ) )->init();
 		( new Woocommerce_Integration( $gr_configuration, $gr_hook_service, $gr_cart_service, $this->logger ) )->init();
 		( new WP_User_Profile_Integration( $gr_configuration, $gr_hook_service, $this->logger ) )->init();
-		( new Recommendation_Integration( $gr_configuration ) )->init();
 		( new Web_Connect_Integration(
 			$gr_configuration,
 			new Cart_Service( $gr_configuration, $gr_cart_service, $buffer_service ),
@@ -164,11 +162,12 @@ class Getresponse_For_Wp {
 	}
 
 	public function extend_api(): void {
-
 		add_action(
 			'rest_api_init',
 			function () {
-				( new GR_API_Controller( $this->version ) )->register_routes();
+				$gr_config_http_client   = new Gr_Configuration_Http_Client( site_url() );
+				$configuration_validator = new Gr_Configuration_Validator( $gr_config_http_client );
+				( new GR_API_Controller( $this->version, $configuration_validator ) )->register_routes();
 			}
 		);
 	}

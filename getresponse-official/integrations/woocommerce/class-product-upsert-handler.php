@@ -22,6 +22,7 @@ class Product_Upsert_Handler {
 	private const PRODUCT_TYPE_SIMPLE   = 'simple';
 	private const PRODUCT_TYPE_VARIABLE = 'variable';
 	private const PRODUCT_TYPE_EXTERNAL = 'external';
+	private const MAX_DESC_LENGTH       = 1000;
 
 	private Gr_Configuration $gr_configuration;
 	private Gr_Hook_Service $hook_service;
@@ -112,8 +113,8 @@ class Product_Upsert_Handler {
 				$variation->get_permalink(),
 				null,
 				null,
-				$variation->get_short_description(),
-				$variation->get_description(),
+				$this->reduce_description( $variation->get_short_description(), self::MAX_DESC_LENGTH ),
+				$this->reduce_description( $variation->get_description(), self::MAX_DESC_LENGTH ),
 				$this->get_product_images( $variation ),
 				$variation->get_status(),
 				'' === $variation->get_sale_price() ? null : round( (float) $variation->get_sale_price(), 2 ),
@@ -142,8 +143,8 @@ class Product_Upsert_Handler {
 			$product->get_permalink(),
 			null,
 			null,
-			$product->get_short_description(),
-			$product->get_description(),
+			$this->reduce_description( $product->get_short_description(), self::MAX_DESC_LENGTH ),
+			$this->reduce_description( $product->get_description(), self::MAX_DESC_LENGTH ),
 			$this->get_product_images( $product ),
 			$product->get_status(),
 			'' === $product->get_sale_price() ? null : round( (float) $product->get_sale_price(), 2 ),
@@ -154,27 +155,49 @@ class Product_Upsert_Handler {
 		return array( $variant );
 	}
 
+	private function reduce_description( string $description, int $max_length ): string {
+		$clean_description = (string) preg_replace( '#<style(.*?)>(.*?)</style>#is', '', $description );
+		$clean_description = (string) preg_replace( '#<script(.*?)>(.*?)</script>#is', '', $clean_description );
+		$clean_description = html_entity_decode( $clean_description, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$clean_description = html_entity_decode( $clean_description, ENT_COMPAT );
+		$clean_description = wp_strip_all_tags( $clean_description );
+		$clean_description = trim( $clean_description );
+		$clean_description = (string) preg_replace( '/\s+/', ' ', $clean_description );
+
+		if ( mb_strlen( $clean_description ) <= $max_length ) {
+			return $clean_description;
+		}
+
+		return mb_substr( $clean_description, 0, $max_length - 3 ) . '...';
+	}
+
 	/**
 	 * @return array<Image_Model>
 	 */
 	private function get_product_images( WC_Product $product ): array {
-		$image_number = 0;
-		$image_model  = array();
+		$image_model = array();
 
 		if ( ! empty( $product->get_image_id() ) ) {
-			$image_url = new Gr_Image_Url( wp_get_attachment_url( $product->get_image_id() ) );
+			$url = wp_get_attachment_url( $product->get_image_id() );
+			if ( is_string( $url ) ) {
+				$image_url = new Gr_Image_Url( $url );
+				if ( $image_url->is_valid() ) {
+					$image_model[] = new Image_Model( $image_url->get_url(), 0 );
 
-			if ( $image_url->is_valid() ) {
-				$image_model[] = new Image_Model( $image_url->get_url(), $image_number++ );
+					return $image_model;
+				}
 			}
 		}
 
 		$gallery_image_ids = $product->get_gallery_image_ids();
 
-		foreach ( $gallery_image_ids as $image_id ) {
-			$image_url = new Gr_Image_Url( wp_get_attachment_url( $image_id ) );
-			if ( $image_url->is_valid() ) {
-				$image_model[] = new Image_Model( $image_url->get_url(), $image_number++ );
+		if ( ! empty( $gallery_image_ids ) ) {
+			$url = wp_get_attachment_url( $gallery_image_ids[0] );
+			if ( is_string( $url ) ) {
+				$image_url = new Gr_Image_Url( $url );
+				if ( $image_url->is_valid() ) {
+					$image_model[] = new Image_Model( $image_url->get_url(), 0 );
+				}
 			}
 		}
 

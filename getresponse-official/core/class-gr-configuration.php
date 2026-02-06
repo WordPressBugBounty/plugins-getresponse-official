@@ -5,36 +5,32 @@ declare(strict_types=1);
 namespace GR\WordPress\Core;
 
 class Gr_Configuration {
+	public const CHECKOUT_FIELD_MARKETING_CONSENT = 'gr/marketing_consent';
 
-	public const MARKETING_CONSENT_META_NAME    = 'gr_marketing_consent';
-	public const USER_UPDATED_AT_META_NAME      = 'gr_updated_at';
-	public const USER_UPDATED_AFTER_FILTER_NAME = 'gr_updated_after';
-
+	public const MARKETING_CONSENT_META_NAME          = 'gr_marketing_consent';
+	public const USER_UPDATED_AT_META_NAME            = 'gr_updated_at';
+	public const USER_UPDATED_AFTER_FILTER_NAME       = 'gr_updated_after';
 	public const CSS_MARKETING_CONSENT_WRAPPER_CLASS  = 'gr-marketing-consent';
 	public const CSS_MARKETING_CONSENT_CHECKBOX_CLASS = 'gr-marketing-consent-checkbox';
 	public const CSS_MARKETING_CONSENT_LABEL_CLASS    = 'gr-marketing-consent-label';
-
-	public const LIVE_SYNC_TYPE_CONTACT        = 'Contacts';
-	public const LIVE_SYNC_TYPE_FULL_ECOMMERCE = 'FullEcommerce';
-	public const WEB_CONNECT_SNIPPET_KEY       = 'webConnectSnippet';
-	public const RECOMMENDATION_SNIPPET_KEY    = 'recommendationSnippet';
-	public const LIVE_SYNC_URL_KEY             = 'liveSyncUrl';
-	public const LIVE_SYNC_TYPE_KEY            = 'liveSyncType';
-	public const MARKETING_CONSENT_TEXT_KEY    = 'marketingConsentText';
-	public const GETRESPONSE_SHOP_ID           = 'grShopId';
-	public const INTEGRATE_WITH_CONTACT_FORM_7 = 'integrateWithContactForm7';
+	public const LIVE_SYNC_TYPE_CONTACT               = 'Contacts';
+	public const LIVE_SYNC_TYPE_FULL_ECOMMERCE        = 'FullEcommerce';
+	public const WEB_CONNECT_SNIPPET_KEY              = 'webConnectSnippet';
+	public const LIVE_SYNC_URL_KEY                    = 'liveSyncUrl';
+	public const LIVE_SYNC_TYPE_KEY                   = 'liveSyncType';
+	public const MARKETING_CONSENT_TEXT_KEY           = 'marketingConsentText';
+	public const GETRESPONSE_SHOP_ID                  = 'grShopId';
+	public const INTEGRATE_WITH_CONTACT_FORM_7        = 'integrateWithContactForm7';
 
 	private string $web_connect_snippet;
-	private string $recommendation_snippet;
 	private string $live_sync_url;
 	private string $live_sync_type;
 	private string $marketing_consent_text;
 	private string $getresponse_shop_id;
 	private bool $integrate_with_contact_form_7;
 
-	public function __construct( string $web_connect_snippet, string $recommendation_snippet, string $live_sync_url, string $live_sync_type, string $marketing_consent_text, string $getresponse_shop_id, bool $integrate_with_contact_form_7 ) {
+	public function __construct( string $web_connect_snippet, string $live_sync_url, string $live_sync_type, string $marketing_consent_text, string $getresponse_shop_id, bool $integrate_with_contact_form_7 ) {
 		$this->web_connect_snippet           = $web_connect_snippet;
-		$this->recommendation_snippet        = $recommendation_snippet;
 		$this->live_sync_url                 = $live_sync_url;
 		$this->live_sync_type                = $live_sync_type;
 		$this->marketing_consent_text        = $marketing_consent_text;
@@ -45,7 +41,6 @@ class Gr_Configuration {
 	public static function make_from_array( array $params ): self {
 		return new self(
 			! empty( $params[ self::WEB_CONNECT_SNIPPET_KEY ] ) ? $params[ self::WEB_CONNECT_SNIPPET_KEY ] : '',
-			! empty( $params[ self::RECOMMENDATION_SNIPPET_KEY ] ) ? $params[ self::RECOMMENDATION_SNIPPET_KEY ] : '',
 			! empty( $params[ self::LIVE_SYNC_URL_KEY ] ) ? $params[ self::LIVE_SYNC_URL_KEY ] : '',
 			! empty( $params[ self::LIVE_SYNC_TYPE_KEY ] ) ? $params[ self::LIVE_SYNC_TYPE_KEY ] : '',
 			! empty( $params[ self::MARKETING_CONSENT_TEXT_KEY ] ) ? $params[ self::MARKETING_CONSENT_TEXT_KEY ] : '',
@@ -56,9 +51,6 @@ class Gr_Configuration {
 
 	public function get_web_connect_snippet(): string {
 		return $this->web_connect_snippet;
-	}
-	public function get_recommendation_snippet(): string {
-		return $this->recommendation_snippet;
 	}
 
 	public function get_live_sync_url(): string {
@@ -79,7 +71,6 @@ class Gr_Configuration {
 	public function to_array(): array {
 		return array(
 			self::WEB_CONNECT_SNIPPET_KEY       => $this->get_web_connect_snippet(),
-			self::RECOMMENDATION_SNIPPET_KEY    => $this->get_recommendation_snippet(),
 			self::LIVE_SYNC_URL_KEY             => $this->get_live_sync_url(),
 			self::LIVE_SYNC_TYPE_KEY            => $this->get_live_sync_type(),
 			self::MARKETING_CONSENT_TEXT_KEY    => $this->get_marketing_consent_text(),

@@ -1,4 +1,23 @@
 *** Changelog ***
+2026-01-08 - version 1.6.3
+- Added limitation for product image and desc
+
+2026-01-07 - version 1.6.2
+- Fix in getting product images
+- Fix in passing marketing consent from profile page
+
+2025-12-04 - version 1.6.1
+- Added support for Wordpress 6.9
+
+2025-11-20 - version 1.6.0
+- Added support for handling marketing consent on checkout-blocks
+
+2025-11-18 - version 1.5.5
+- Improved HTTP request isolation to prevent third-party plugin interference
+
+2025-10-21 - version 1.5.4
+- Fixed error handling
+
 2025-09-02 - version 1.5.3
 - Improved cart management with additional cookie cart_id storage
 

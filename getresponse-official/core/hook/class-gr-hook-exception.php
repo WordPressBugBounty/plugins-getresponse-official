@@ -9,7 +9,7 @@ use WP_Error;
 
 class Gr_Hook_Exception extends Exception {
 
-	public static function createFromWPError( $error_message, $error_code ): self {
-		return new self( $error_message, $error_code );
+	public static function createFromWPError( $error_message ): self {
+		return new self( $error_message );
 	}
 }

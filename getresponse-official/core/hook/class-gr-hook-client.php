@@ -52,8 +52,9 @@ class Gr_Hook_Client {
 
 		if ( $response instanceof WP_Error ) {
 			throw Gr_Hook_Exception::createFromWPError(
-				esc_attr( $response->get_error_message() ),
-				esc_attr( $response->get_error_code() )
+				esc_attr(
+					sprintf( '[%s]: %s', $response->get_error_code(), $response->get_error_message() ),
+				),
 			);
 		}
 

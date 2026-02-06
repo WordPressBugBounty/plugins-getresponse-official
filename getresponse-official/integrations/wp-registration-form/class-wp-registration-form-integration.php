@@ -7,6 +7,8 @@ namespace GR\WordPress\Integrations\WPRegistrationForm;
 use Exception;
 use GR\WordPress\Core\Functions;
 use GR\WordPress\Core\Gr_Configuration;
+use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
+use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer_Exception;
 use GR\WordPress\Core\Hook\Gr_Hook_Service;
 use GR\WordPress\Core\Hook\Model\User_Model;
 use GR\WordPress\Integrations\Integration;
@@ -30,9 +32,15 @@ class WP_Registration_Form_Integration implements Integration {
 	}
 
 	public function handle_user_registered( int $user_id, array $user_data ): void {
-		$marketing_consent_key = Gr_Configuration::MARKETING_CONSENT_META_NAME;
-		$gr_marketing_consent  = isset( $_POST[ $marketing_consent_key ] ) && (bool) sanitize_text_field( $_POST[ $marketing_consent_key ] );
 		try {
+			$marketing_consent_key = Gr_Configuration::MARKETING_CONSENT_META_NAME;
+
+			try {
+				$gr_marketing_consent = Gr_User_Marketing_Consent_Buffer::get_user_marketing_consent();
+			} catch ( Gr_User_Marketing_Consent_Buffer_Exception $buffer_exception ) {
+				$gr_marketing_consent = isset( $_POST[ $marketing_consent_key ] ) && (bool) sanitize_text_field( $_POST[ $marketing_consent_key ] );
+			}
+
 			if ( $gr_marketing_consent ) {
 				add_user_meta( $user_id, $marketing_consent_key, 1 );
 			}

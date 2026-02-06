@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace GR\WordPress\Controllers;
 
 use GR\WordPress\Core\Gr_Configuration;
+use GR\WordPress\Core\Gr_Configuration_Validator;
+use GR\WordPress\Core\Gr_Configuration_Validator_Exception;
 use GR\WordPress\Core\Gr_Rest_Api_Service;
 use GR\WordPress\Core\logger\Gr_Logger_Configuration;
 use WP_REST_Controller;
@@ -14,15 +16,18 @@ use WP_REST_Server;
 
 class GR_API_Controller extends WP_REST_Controller {
 
+
 	private const LOGGER_RETENTION_KEY = 'logger_retention';
 	private const LOGGER_ENABLED_KEY   = 'logger_enabled';
 
 	private string $version;
 	private Gr_Rest_Api_Service $gr_rest_api_service;
+	private Gr_Configuration_Validator $configuration_validator;
 
-	public function __construct( string $version ) {
-		$this->version             = $version;
-		$this->gr_rest_api_service = new Gr_Rest_Api_Service();
+	public function __construct( string $version, Gr_Configuration_Validator $configuration_validator ) {
+		$this->version                 = $version;
+		$this->gr_rest_api_service     = new Gr_Rest_Api_Service();
+		$this->configuration_validator = $configuration_validator;
 	}
 
 	public function register_routes(): void {
@@ -33,7 +38,7 @@ class GR_API_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_configuration' ),
 				'permission_callback' => function () {
-					return is_user_logged_in();
+					return current_user_can( 'manage_options' );
 				},
 			)
 		);
@@ -45,7 +50,7 @@ class GR_API_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => array( $this, 'update_configuration' ),
 				'permission_callback' => function () {
-					return is_user_logged_in();
+					return current_user_can( 'manage_options' );
 				},
 				'args'                => array(
 					Gr_Configuration::WEB_CONNECT_SNIPPET_KEY => array(
@@ -83,7 +88,7 @@ class GR_API_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'clear_configuration' ),
 				'permission_callback' => function () {
-					return is_user_logged_in();
+					return current_user_can( 'manage_options' );
 				},
 			)
 		);
@@ -95,7 +100,7 @@ class GR_API_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_sites' ),
 				'permission_callback' => function () {
-					return is_user_logged_in();
+					return current_user_can( 'manage_options' );
 				},
 			)
 		);
@@ -107,7 +112,7 @@ class GR_API_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_logger_configuration' ),
 				'permission_callback' => function () {
-					return is_user_logged_in();
+					return current_user_can( 'manage_options' );
 				},
 			)
 		);
@@ -119,7 +124,7 @@ class GR_API_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_log_files' ),
 				'permission_callback' => function () {
-					return is_user_logged_in();
+					return current_user_can( 'manage_options' );
 				},
 			)
 		);
@@ -131,7 +136,7 @@ class GR_API_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => array( $this, 'update_logger_configuration' ),
 				'permission_callback' => function () {
-					return is_user_logged_in();
+					return current_user_can( 'manage_options' );
 				},
 				'args'                => array(
 					self::LOGGER_RETENTION_KEY => array(
@@ -155,6 +160,19 @@ class GR_API_Controller extends WP_REST_Controller {
 	}
 
 	public function update_configuration( $request ): WP_REST_Response {
+		try {
+			$this->configuration_validator->validate(
+				$request->get_params(),
+				$request->get_headers()
+			);
+		} catch ( Gr_Configuration_Validator_Exception $e ) {
+			return new WP_REST_Response(
+				array(
+					'error' => $e->getMessage(),
+				),
+				400
+			);
+		}
 		$configuration = Gr_Configuration::make_from_array( $request->get_params() );
 		$this->gr_rest_api_service->update_configuration( $configuration );
 

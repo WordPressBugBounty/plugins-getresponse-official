@@ -7,6 +7,8 @@ namespace GR\WordPress\Integrations\Woocommerce;
 use Exception;
 use GR\WordPress\Core\Functions;
 use GR\WordPress\Core\Gr_Configuration;
+use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
+use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer_Exception;
 use GR\WordPress\Core\Hook\Gr_Hook_Exception;
 use GR\WordPress\Core\Hook\Gr_Hook_Service;
 use GR\WordPress\Core\Hook\Model\Address_Model;
@@ -52,19 +54,17 @@ class Order_Upsert_Handler {
 	}
 
 	private function get_customer( WC_Order $order ): User_Model {
-		$marketing_consent_key = Gr_Configuration::MARKETING_CONSENT_META_NAME;
-		$customer_id           = $order->get_customer_id();
+		$customer_id = $order->get_customer_id();
 
 		if ( 0 === $customer_id ) {
-
 			$raw_billing_address = $order->get_address();
 			$billing_address     = $this->get_address( $order, 'billing' );
-			$marketing_consent   = isset( $_POST[ $marketing_consent_key ] ) ? sanitize_text_field( $_POST[ $marketing_consent_key ] ) : false;
+			$marketing_consent   = $this->has_customer_marketing_consent();
 
 			return new User_Model(
 				0,
 				$raw_billing_address['email'],
-				(bool) $marketing_consent,
+				$marketing_consent,
 				$raw_billing_address['first_name'],
 				$raw_billing_address['last_name'],
 				$billing_address
@@ -75,7 +75,7 @@ class Order_Upsert_Handler {
 
 		$first_name        = get_user_meta( $customer_id, 'first_name', true );
 		$last_name         = get_user_meta( $customer_id, 'last_name', true );
-		$marketing_consent = (bool) get_user_meta( $customer_id, $marketing_consent_key, true );
+		$marketing_consent = (bool) get_user_meta( $customer_id, Gr_Configuration::MARKETING_CONSENT_META_NAME, true );
 
 		$billing_first_name = get_user_meta( $customer_id, 'billing_first_name', true );
 		$billing_last_name  = get_user_meta( $customer_id, 'billing_last_name', true );
@@ -167,5 +167,17 @@ class Order_Upsert_Handler {
 		);
 
 		$this->gr_hook_service->send_callback( $this->gr_configuration, $model );
+	}
+
+	private function has_customer_marketing_consent(): bool {
+		try {
+			return Gr_User_Marketing_Consent_Buffer::get_user_marketing_consent();
+		} catch ( Gr_User_Marketing_Consent_Buffer_Exception $buffer_exception ) {
+			if ( isset( $_POST[ Gr_Configuration::MARKETING_CONSENT_META_NAME ] ) ) {
+				return (bool) sanitize_text_field( $_POST[ Gr_Configuration::MARKETING_CONSENT_META_NAME ] );
+			}
+		}
+
+		return false;
 	}
 }
