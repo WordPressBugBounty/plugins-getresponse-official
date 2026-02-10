@@ -45,9 +45,7 @@ class Order_Upsert_Handler {
 				return;
 			}
 
-			$cart_id = $this->gr_cart_service->get_cart_id_and_reset();
-
-			$this->send_callback( $cart_id, $order );
+			$this->send_callback( $order );
 		} catch ( Exception $e ) {
 			$this->logger->error( 'Order handler error', Functions::get_error_context( $e ) );
 		}
@@ -146,11 +144,11 @@ class Order_Upsert_Handler {
 	/**
 	 * @throws Gr_Hook_Exception
 	 */
-	private function send_callback( ?string $cart_id, WC_Order $order ): void {
+	private function send_callback( WC_Order $order ): void {
 		$model = new Order_Model(
 			$order->get_id(),
 			$order->get_order_number(),
-			$cart_id,
+			$order->get_meta( $this->gr_cart_service::CART_ID_META_NAME ) ?? '',
 			$order->get_billing_email(),
 			$this->get_customer( $order ),
 			$this->get_callback_products( $order ),

@@ -1,4 +1,8 @@
 *** Changelog ***
+2026-01-22 - version 1.6.4
+- Removed limitation for product types
+- Improved order tracking to capture all new orders from the moment of creation
+
 2026-01-08 - version 1.6.3
 - Added limitation for product image and desc
 

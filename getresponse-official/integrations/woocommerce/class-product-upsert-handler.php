@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GR\WordPress\Integrations\Woocommerce;
 
-use Exception;
 use GR\WordPress\Core\Functions;
 use GR\WordPress\Core\Gr_Configuration;
 use GR\WordPress\Core\Hook\Gr_Hook_Service;
@@ -14,15 +13,17 @@ use GR\WordPress\Core\Hook\Model\Image_Model;
 use GR\WordPress\Core\Hook\Model\Product_Model;
 use GR\WordPress\Core\Hook\Model\Variant_Model;
 use Psr\Log\LoggerInterface;
+use Throwable;
 use WC_Product;
 use WC_Product_Variation;
 
 class Product_Upsert_Handler {
-
-	private const PRODUCT_TYPE_SIMPLE   = 'simple';
 	private const PRODUCT_TYPE_VARIABLE = 'variable';
-	private const PRODUCT_TYPE_EXTERNAL = 'external';
 	private const MAX_DESC_LENGTH       = 1000;
+
+	private const NOT_ALLOWED_PRODUCT_TYPES = array(
+		'variation',
+	);
 
 	private Gr_Configuration $gr_configuration;
 	private Gr_Hook_Service $hook_service;
@@ -47,11 +48,7 @@ class Product_Upsert_Handler {
 				return;
 			}
 
-			if ( ! in_array(
-				$product->get_type(),
-				array( self::PRODUCT_TYPE_SIMPLE, self::PRODUCT_TYPE_VARIABLE, self::PRODUCT_TYPE_EXTERNAL ),
-				true
-			) ) {
+			if ( in_array( $product->get_type(), self::NOT_ALLOWED_PRODUCT_TYPES, true ) ) {
 				return;
 			}
 
@@ -73,7 +70,7 @@ class Product_Upsert_Handler {
 			);
 
 			$this->hook_service->send_callback( $this->gr_configuration, $model );
-		} catch ( Exception $e ) {
+		} catch ( Throwable $e ) {
 			$this->logger->error( 'Product handler error', Functions::get_error_context( $e ) );
 		}
 	}

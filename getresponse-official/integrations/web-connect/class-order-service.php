@@ -35,11 +35,9 @@ class Order_Service {
 			return;
 		}
 
-		$cart_id = $this->gr_cart_service->get_cart_id();
-
 		$model = new Buffer_Order_Model(
 			$order->get_id(),
-			$cart_id,
+			$order->get_meta( $this->gr_cart_service::CART_ID_META_NAME ) ?? '',
 			round( (float) $order->get_total(), 2 ),
 			$order->get_currency(),
 			$this->get_buffer_products( $order ),

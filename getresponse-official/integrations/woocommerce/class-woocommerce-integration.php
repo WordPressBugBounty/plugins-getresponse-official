@@ -46,13 +46,8 @@ class Woocommerce_Integration implements Integration {
 		add_action( 'woocommerce_product_set_stock', array( $this, 'handle_product_stock_change' ) );
 		add_action( 'woocommerce_variation_set_stock', array( $this, 'handle_product_stock_change' ) );
 
-		add_action( 'woocommerce_order_status_pending', array( $this, 'handle_order_upsert' ), 10, 2 );
-		add_action( 'woocommerce_order_status_on-hold', array( $this, 'handle_order_upsert' ), 10, 2 );
-		add_action( 'woocommerce_order_status_failed', array( $this, 'handle_order_upsert' ), 10, 2 );
-		add_action( 'woocommerce_order_status_processing', array( $this, 'handle_order_upsert' ), 10, 2 );
-		add_action( 'woocommerce_order_status_completed', array( $this, 'handle_order_upsert' ), 10, 2 );
-		add_action( 'woocommerce_order_status_refunded', array( $this, 'handle_order_upsert' ), 10, 2 );
-		add_action( 'woocommerce_order_status_cancelled', array( $this, 'handle_order_upsert' ), 10, 2 );
+		add_action( 'woocommerce_new_order', array( $this, 'handle_new_order' ), 10, 2 );
+		add_action( 'woocommerce_order_status_changed', array( $this, 'handle_order_status_changed' ), 10, 4 );
 
 		add_action( 'woocommerce_add_to_cart', array( $this, 'handle_cart_upsert' ), 30, );
 		add_action( 'woocommerce_cart_item_removed', array( $this, 'handle_cart_upsert' ), 30, );
@@ -84,7 +79,7 @@ class Woocommerce_Integration implements Integration {
 		$handler->handle( $product->get_id() );
 	}
 
-	public function handle_order_upsert( ?int $order_id, WC_Order $order ): void {
+	public function handle_order_status_changed( ?int $order_id, string $status_from, string $status_to, WC_Order $order ): void {
 
 		do_action( 'gr4wp_order_upsert', $order );
 
@@ -94,6 +89,20 @@ class Woocommerce_Integration implements Integration {
 			$this->gr_cart_service,
 			$this->logger
 		);
+
+		$handler->handle( $order );
+	}
+
+	public function handle_new_order( ?int $order_id, WC_Order $order ): void {
+
+		$handler = new New_Order_Handler(
+			$this->gr_configuration,
+			$this->gr_cart_service,
+			$this->logger
+		);
+
+		do_action( 'gr4wp_order_upsert', $order );
+
 		$handler->handle( $order );
 	}
 

@@ -7,8 +7,9 @@ namespace GR\WordPress\Integrations\Woocommerce;
 use GR\WordPress\Core\Functions;
 
 class Gr_Cart_Service {
-	private const CART_ID_NAME = 'gr4wp_cart_id';
-	const CART_TTL             = 3600 * 24 * 30;
+	private const CART_ID_NAME     = 'gr4wp_cart_id';
+	public const CART_ID_META_NAME = '_gr_cart_id';
+	const CART_TTL                 = 3600 * 24 * 30;
 
 	public function get_cart_id(): ?string {
 		$cart_id = Functions::session_get( self::CART_ID_NAME );
