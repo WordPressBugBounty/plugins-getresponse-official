@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GR\WordPress\Core;
 
-use Exception;
+use Throwable;
 
 class Functions {
 
@@ -37,7 +37,7 @@ class Functions {
 		return GETRESPONSE_FOR_WP_VERSION;
 	}
 
-	public static function get_error_context( Exception $exception ): array {
+	public static function get_error_context( Throwable $exception ): array {
 		return array(
 			'file'    => basename( $exception->getFile() ),
 			'line'    => $exception->getLine(),

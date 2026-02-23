@@ -1,5 +1,9 @@
 Changelog
 =========
+#### 1.6.5 - 2026-02-23
+- Fixed error for missing product in order
+- Added error handling in webConnect integration
+
 #### 1.6.4 - 2026-01-22
 - Removed limitation for product types
 - Improved order tracking to capture all new orders from the moment of creation

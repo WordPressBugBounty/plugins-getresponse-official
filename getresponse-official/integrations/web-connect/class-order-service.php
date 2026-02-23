@@ -35,12 +35,17 @@ class Order_Service {
 			return;
 		}
 
+		$products = $this->get_buffer_products( $order );
+		if ( empty( $products ) ) {
+			return;
+		}
+
 		$model = new Buffer_Order_Model(
 			$order->get_id(),
 			$order->get_meta( $this->gr_cart_service::CART_ID_META_NAME ) ?? '',
 			round( (float) $order->get_total(), 2 ),
 			$order->get_currency(),
-			$this->get_buffer_products( $order ),
+			$products,
 		);
 
 		$this->buffer_service->add_order_to_buffer( $model );
@@ -55,6 +60,9 @@ class Order_Service {
 
 		/** @var WC_Order_Item_Product $item */
 		foreach ( $order->get_items() as $item ) {
+			if ( $item->get_product() === false ) {
+				return array();
+			}
 
 			$product_price = ( (float) $item->get_total() + (float) $item->get_total_tax() ) / $item->get_quantity();
 

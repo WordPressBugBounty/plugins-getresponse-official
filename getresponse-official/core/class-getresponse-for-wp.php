@@ -104,7 +104,8 @@ class Getresponse_For_Wp {
 		( new Web_Connect_Integration(
 			$gr_configuration,
 			new Cart_Service( $gr_configuration, $gr_cart_service, $buffer_service ),
-			new Order_Service( $gr_configuration, $gr_cart_service, $buffer_service )
+			new Order_Service( $gr_configuration, $gr_cart_service, $buffer_service ),
+			$this->logger
 		) )->init();
 	}
 
