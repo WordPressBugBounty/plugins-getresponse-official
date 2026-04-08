@@ -11,13 +11,17 @@ class Functions {
 
 	public static function get_allowed_html_elements(): array {
 		return array(
-			'label' => array(),
-			'p'     => array(),
+			'label' => array(
+				'class' => true,
+			),
+			'p'     => array(
+				'class' => true,
+			),
 			'input' => array(
-				'type'  => array( 'checkbox' ),
-				'name'  => array(),
-				'value' => array(),
-				'class' => array(),
+				'type'  => true,
+				'name'  => true,
+				'value' => true,
+				'class' => true,
 			),
 			'span'  => array(),
 			'br'    => array(),
@@ -59,9 +63,9 @@ class Functions {
 		ob_start();
 
 		printf( '<p class="%s">', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_WRAPPER_CLASS ) );
-		echo '<label>';
+		printf( '<label class="%s">', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ) );
 		printf( '<input type="checkbox" name="%s" value="1" class="%s" />', esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME ), esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ) );
-		printf( '<span class="%s">%s</span>', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ), esc_attr( $marketing_consent_text ) );
+		printf( '<span>%s</span>', esc_attr( $marketing_consent_text ) );
 		echo '</label>';
 		echo '</p>';
 		echo '<br />';

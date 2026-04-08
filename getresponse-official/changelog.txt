@@ -1,4 +1,7 @@
 *** Changelog ***
+2026-04-01 - version 1.6.6
+- Improved CSS classes for marketing checkbox
+
 2026-02-23 - version 1.6.5
 - Fixed error for missing product in order
 - Added error handling in webConnect integration

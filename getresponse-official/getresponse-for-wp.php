@@ -16,7 +16,7 @@
  * Plugin Name:       GetResponseOfficial
  * Plugin URI:        https://www.getresponse.com/help/how-to-integrate-wordpress-with-getresponse.html
  * Description:       GetResponse for WordPress lets you add site visitors to your contact list, update contact information, track site visits, and pass ecommerce data to GetResponse. It helps you keep your list growing and ensures you have the contact information and ecommerce data to plan successful marketing campaigns.
- * Version:           1.6.5
+ * Version:           1.6.6
  * Author:            GetResponse
  * Author URI:        https://getresponse.com
  * License:           GPL-2.0+
@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-define( 'GETRESPONSE_FOR_WP_VERSION', '1.6.5' );
+define( 'GETRESPONSE_FOR_WP_VERSION', '1.6.6' );
 
 $get_response_for_wp = new Getresponse_For_Wp();
 register_activation_hook( __FILE__, array( $get_response_for_wp, 'set_gr_updated_at_for_existing_users' ) );

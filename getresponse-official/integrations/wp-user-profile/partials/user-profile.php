@@ -13,14 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<tr class="user-rich-editing-wrap">
 		<th scope="row">Marketing Consent</th>
 		<td>
-			<label>
+			<label class="<?php echo esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ); ?>">
 				<input type="hidden" name="<?php echo esc_html( Gr_Configuration::MARKETING_CONSENT_META_NAME ); ?>" value="0">
 				<input name="<?php echo esc_html( Gr_Configuration::MARKETING_CONSENT_META_NAME ); ?>"
 										<?php
 										if ( esc_html( $is_gr_marketing_consent_checked ) ) {
 											echo 'checked';  }
 										?>
-				type="checkbox" id="<?php echo esc_html( Gr_Configuration::MARKETING_CONSENT_META_NAME ); ?>" value="1">
+				type="checkbox" id="<?php echo esc_html( Gr_Configuration::MARKETING_CONSENT_META_NAME ); ?>" value="1"
+				class="<?php echo esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ); ?>">
 				<?php echo esc_html( $marketing_consent_text ); ?>
 			</label>
 		</td>

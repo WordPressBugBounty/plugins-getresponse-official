@@ -145,10 +145,13 @@ class Woocommerce_Integration implements Integration {
 		woocommerce_form_field(
 			esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME ),
 			array(
-				'type'     => 'checkbox',
-				'required' => false,
-				'label'    => esc_attr( $marketing_consent_text ),
-				'value'    => '1',
+				'type'        => 'checkbox',
+				'required'    => false,
+				'label'       => esc_attr( $marketing_consent_text ),
+				'value'       => '1',
+				'class'       => array( Gr_Configuration::CSS_MARKETING_CONSENT_WRAPPER_CLASS ),
+				'input_class' => array( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ),
+				'label_class' => array( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ),
 			),
 			isset( $_POST[ $marketing_consent_key ] ) ? sanitize_text_field( $_POST[ $marketing_consent_key ] ) : ''
 		);

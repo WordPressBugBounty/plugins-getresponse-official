@@ -53,8 +53,10 @@ class Contact_Form_7_Integration implements Integration {
 
 		ob_start();
 
+		printf( '<label class="%s">', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ) );
 		printf( '<input type="checkbox" name="%s" class="%s" value="1" />', esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME ), esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ) );
-		printf( '<span class="%s">%s</span>', esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ), esc_attr( $marketing_consent_text ) );
+		printf( '<span>%s</span>', esc_attr( esc_attr( $marketing_consent_text ) ) );
+		printf( '</label>' );
 
 		$html = ob_get_clean();
 
