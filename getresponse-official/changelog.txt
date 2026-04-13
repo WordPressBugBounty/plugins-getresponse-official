@@ -1,4 +1,7 @@
 *** Changelog ***
+#### 1.6.7 - 2026-04-10
+- Improved custom fields handling
+
 2026-04-01 - version 1.6.6
 - Improved CSS classes for marketing checkbox
 

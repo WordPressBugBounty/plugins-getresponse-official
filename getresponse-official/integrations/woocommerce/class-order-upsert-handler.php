@@ -65,35 +65,58 @@ class Order_Upsert_Handler {
 				$marketing_consent,
 				$raw_billing_address['first_name'],
 				$raw_billing_address['last_name'],
-				$billing_address
+				$billing_address,
+				array(
+					'billing_first_name'  => $order->get_billing_first_name(),
+					'billing_last_name'   => $order->get_billing_last_name(),
+					'billing_company'     => $order->get_billing_company(),
+					'billing_address_1'   => $order->get_billing_address_1(),
+					'billing_address_2'   => $order->get_billing_address_2(),
+					'billing_city'        => $order->get_billing_city(),
+					'billing_postcode'    => $order->get_billing_postcode(),
+					'billing_country'     => $order->get_billing_country(),
+					'billing_state'       => $order->get_billing_state(),
+					'billing_phone'       => $order->get_billing_phone(),
+					'shipping_first_name' => $order->get_shipping_first_name(),
+					'shipping_last_name'  => $order->get_shipping_last_name(),
+					'shipping_company'    => $order->get_shipping_company(),
+					'shipping_address_1'  => $order->get_shipping_address_1(),
+					'shipping_address_2'  => $order->get_shipping_address_2(),
+					'shipping_city'       => $order->get_shipping_city(),
+					'shipping_postcode'   => $order->get_shipping_postcode(),
+					'shipping_country'    => $order->get_shipping_country(),
+					'shipping_state'      => $order->get_shipping_state(),
+					'shipping_phone'      => $order->get_shipping_phone(),
+				)
 			);
 		}
 
 		$user_data = get_userdata( $customer_id );
+		$user_meta = get_user_meta( $customer_id );
 
-		$first_name        = get_user_meta( $customer_id, 'first_name', true );
-		$last_name         = get_user_meta( $customer_id, 'last_name', true );
-		$marketing_consent = (bool) get_user_meta( $customer_id, Gr_Configuration::MARKETING_CONSENT_META_NAME, true );
+		$first_name        = $user_meta['first_name'][0] ?? '';
+		$last_name         = $user_meta['last_name'][0] ?? '';
+		$marketing_consent = (bool) ( $user_meta[ Gr_Configuration::MARKETING_CONSENT_META_NAME ][0] ?? false );
 
-		$billing_first_name = get_user_meta( $customer_id, 'billing_first_name', true );
-		$billing_last_name  = get_user_meta( $customer_id, 'billing_last_name', true );
-		$billing_country    = get_user_meta( $customer_id, 'billing_country', true );
-		$billing_address_1  = get_user_meta( $customer_id, 'billing_address_1', true );
-		$billing_address_2  = get_user_meta( $customer_id, 'billing_address_2', true );
-		$billing_city       = get_user_meta( $customer_id, 'billing_city', true );
-		$billing_postcode   = get_user_meta( $customer_id, 'billing_postcode', true );
-		$billing_state      = get_user_meta( $customer_id, 'billing_state', true );
-		$billing_phone      = get_user_meta( $customer_id, 'billing_phone', true );
-		$billing_company    = get_user_meta( $customer_id, 'billing_company', true );
+		$billing_first_name = $user_meta['billing_first_name'][0] ?? '';
+		$billing_last_name  = $user_meta['billing_last_name'][0] ?? '';
+		$billing_country    = $user_meta['billing_country'][0] ?? '';
+		$billing_address_1  = $user_meta['billing_address_1'][0] ?? '';
+		$billing_address_2  = $user_meta['billing_address_2'][0] ?? '';
+		$billing_city       = $user_meta['billing_city'][0] ?? '';
+		$billing_postcode   = $user_meta['billing_postcode'][0] ?? '';
+		$billing_state      = $user_meta['billing_state'][0] ?? '';
+		$billing_phone      = $user_meta['billing_phone'][0] ?? '';
+		$billing_company    = $user_meta['billing_company'][0] ?? '';
 
 		$address_model = new Address_Model(
-			$billing_country ?? '',
-			$billing_first_name ?? '',
-			$billing_last_name ?? '',
-			$billing_address_1 ?? '',
+			$billing_country,
+			$billing_first_name,
+			$billing_last_name,
+			$billing_address_1,
 			$billing_address_2,
-			$billing_city ?? '',
-			$billing_postcode ?? '',
+			$billing_city,
+			$billing_postcode,
 			$billing_state,
 			null,
 			$billing_phone,
@@ -106,7 +129,29 @@ class Order_Upsert_Handler {
 			$marketing_consent,
 			$first_name,
 			$last_name,
-			$address_model
+			$address_model,
+			array(
+				'billing_first_name'  => $billing_first_name,
+				'billing_last_name'   => $billing_last_name,
+				'billing_company'     => $billing_company,
+				'billing_address_1'   => $billing_address_1,
+				'billing_address_2'   => $billing_address_2,
+				'billing_city'        => $billing_city,
+				'billing_postcode'    => $billing_postcode,
+				'billing_country'     => $billing_country,
+				'billing_state'       => $billing_state,
+				'billing_phone'       => $billing_phone,
+				'shipping_first_name' => $user_meta['shipping_first_name'][0] ?? '',
+				'shipping_last_name'  => $user_meta['shipping_last_name'][0] ?? '',
+				'shipping_company'    => $user_meta['shipping_company'][0] ?? '',
+				'shipping_address_1'  => $user_meta['shipping_address_1'][0] ?? '',
+				'shipping_address_2'  => $user_meta['shipping_address_2'][0] ?? '',
+				'shipping_city'       => $user_meta['shipping_city'][0] ?? '',
+				'shipping_postcode'   => $user_meta['shipping_postcode'][0] ?? '',
+				'shipping_country'    => $user_meta['shipping_country'][0] ?? '',
+				'shipping_state'      => $user_meta['shipping_state'][0] ?? '',
+				'shipping_phone'      => $user_meta['shipping_phone'][0] ?? '',
+			)
 		);
 	}
 
