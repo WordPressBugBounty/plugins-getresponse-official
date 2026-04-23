@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\Woocommerce;
+namespace GetResponse\WordPress\Integrations\Woocommerce;
 
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Core\Hook\Gr_Image_Url;
-use GR\WordPress\Core\Hook\Model\Category_Model;
-use GR\WordPress\Core\Hook\Model\Image_Model;
-use GR\WordPress\Core\Hook\Model\Product_Model;
-use GR\WordPress\Core\Hook\Model\Variant_Model;
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\Hook\Gr_Image_Url;
+use GetResponse\WordPress\Core\Hook\Model\Category_Model;
+use GetResponse\WordPress\Core\Hook\Model\Image_Model;
+use GetResponse\WordPress\Core\Hook\Model\Product_Model;
+use GetResponse\WordPress\Core\Hook\Model\Variant_Model;
 use Psr\Log\LoggerInterface;
 use Throwable;
 use WC_Product;

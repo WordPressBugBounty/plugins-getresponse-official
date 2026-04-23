@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core;
+namespace GetResponse\WordPress\Core;
 
 use Throwable;
+use WC_Product;
 
 class Functions {
 
@@ -22,6 +23,7 @@ class Functions {
 				'name'  => true,
 				'value' => true,
 				'class' => true,
+				'id'    => true,
 			),
 			'span'  => array(),
 			'br'    => array(),
@@ -67,6 +69,7 @@ class Functions {
 		printf( '<input type="checkbox" name="%s" value="1" class="%s" />', esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME ), esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ) );
 		printf( '<span>%s</span>', esc_attr( $marketing_consent_text ) );
 		echo '</label>';
+		wp_nonce_field( Gr_Nonce_Field::ACTION_NAME, Gr_Nonce_Field::FIELD_NAME );
 		echo '</p>';
 		echo '<br />';
 
@@ -87,12 +90,15 @@ class Functions {
 	}
 
 	public static function session_get( $key ): ?string {
-
 		if ( ! session_id() && ! headers_sent() ) {
 			session_start();
 		}
 
-		return isset( $_SESSION[ $key ] ) ? esc_attr( $_SESSION[ $key ] ) : null;
+		if ( ! isset( $_SESSION[ $key ] ) ) {
+			return null;
+		}
+
+		return sanitize_text_field( wp_unslash( $_SESSION[ $key ] ) );
 	}
 
 	public static function session_get_and_clear( $key ): ?string {
@@ -117,13 +123,45 @@ class Functions {
 	}
 
 	public static function get_cookie( $name ): ?string {
-		if ( ! empty( $_COOKIE[ $name ] ) ) {
-			return esc_attr( $_COOKIE[ $name ] );
+		$name = sanitize_key( $name );
+
+		if ( empty( $_COOKIE[ $name ] ) ) {
+			return null;
 		}
-		return null;
+
+		return sanitize_text_field( wp_unslash( $_COOKIE[ $name ] ) );
 	}
 
 	public static function delete_cookie( $name ): void {
 		setcookie( $name, '', time() - 3600, '/' );
+	}
+
+	public static function get_product_price( WC_Product $product ): string {
+		foreach ( $product->get_children() as $product_children_id ) {
+			$child_product = wc_get_product( $product_children_id );
+			if ( 'publish' === $child_product->get_status() ) {
+				return (string) $child_product->get_price();
+			}
+		}
+
+		return (string) $product->get_price();
+	}
+
+	public static function get_categories( WC_Product $product ): array {
+		$categories = array();
+
+		$terms = get_the_terms( $product->get_id(), 'product_cat' );
+
+		if ( empty( $terms ) ) {
+			return $categories;
+		}
+
+		foreach ( $terms as $category ) {
+			$categories[] = array(
+				'id'   => (string) $category->term_id,
+				'name' => $category->name,
+			);
+		}
+		return $categories;
 	}
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core\Hook;
+namespace GetResponse\WordPress\Core\Hook;
 
 class Gr_Url {
 

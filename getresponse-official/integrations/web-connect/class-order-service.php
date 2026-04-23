@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\WebConnect;
+namespace GetResponse\WordPress\Integrations\WebConnect;
 
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Integrations\WebConnect\Model\Buffer\Category_Model;
-use GR\WordPress\Integrations\WebConnect\Model\Buffer\Order_Model as Buffer_Order_Model;
-use GR\WordPress\Integrations\WebConnect\Model\Buffer\Product_Model;
-use GR\WordPress\Integrations\Woocommerce\Gr_Cart_Service;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Integrations\WebConnect\Model\Buffer\Category_Model;
+use GetResponse\WordPress\Integrations\WebConnect\Model\Buffer\Order_Model as Buffer_Order_Model;
+use GetResponse\WordPress\Integrations\WebConnect\Model\Buffer\Product_Model;
+use GetResponse\WordPress\Integrations\Woocommerce\Gr_Cart_Service;
 use WC_Order;
 use WC_Order_Item_Product;
 

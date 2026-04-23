@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core\Hook;
+namespace GetResponse\WordPress\Core\Hook;
 
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Hook\Model\Model;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Hook\Model\Model;
 
 class Gr_Hook_Service {
 

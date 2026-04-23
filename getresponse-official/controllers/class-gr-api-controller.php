@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Controllers;
+namespace GetResponse\WordPress\Controllers;
 
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Gr_Configuration_Validator;
-use GR\WordPress\Core\Gr_Configuration_Validator_Exception;
-use GR\WordPress\Core\Gr_Rest_Api_Service;
-use GR\WordPress\Core\logger\Gr_Logger_Configuration;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Gr_Configuration_Validator;
+use GetResponse\WordPress\Core\Gr_Configuration_Validator_Exception;
+use GetResponse\WordPress\Core\Gr_Rest_Api_Service;
+use GetResponse\WordPress\Core\logger\Gr_Logger_Configuration;
 use WP_REST_Controller;
 use WP_REST_Request;
 use WP_REST_Response;

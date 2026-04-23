@@ -2,19 +2,20 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\Woocommerce;
+namespace GetResponse\WordPress\Integrations\Woocommerce;
 
 use Exception;
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
-use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer_Exception;
-use GR\WordPress\Core\Hook\Gr_Hook_Exception;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Core\Hook\Model\Address_Model;
-use GR\WordPress\Core\Hook\Model\Line_Model;
-use GR\WordPress\Core\Hook\Model\Order_Model;
-use GR\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Gr_Nonce_Field;
+use GetResponse\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
+use GetResponse\WordPress\Core\Gr_User_Marketing_Consent_Buffer_Exception;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Exception;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\Hook\Model\Address_Model;
+use GetResponse\WordPress\Core\Hook\Model\Line_Model;
+use GetResponse\WordPress\Core\Hook\Model\Order_Model;
+use GetResponse\WordPress\Core\Hook\Model\User_Model;
 use Psr\Log\LoggerInterface;
 use WC_Order;
 use WC_Order_Item_Product;
@@ -213,11 +214,20 @@ class Order_Upsert_Handler {
 	}
 
 	private function has_customer_marketing_consent(): bool {
+		if (
+			! isset( $_POST[ Gr_Nonce_Field::FIELD_NAME ] )
+			|| ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ Gr_Nonce_Field::FIELD_NAME ] ) ), Gr_Nonce_Field::ACTION_NAME )
+		) {
+			return false;
+		}
+
 		try {
 			return Gr_User_Marketing_Consent_Buffer::get_user_marketing_consent();
 		} catch ( Gr_User_Marketing_Consent_Buffer_Exception $buffer_exception ) {
 			if ( isset( $_POST[ Gr_Configuration::MARKETING_CONSENT_META_NAME ] ) ) {
-				return (bool) sanitize_text_field( $_POST[ Gr_Configuration::MARKETING_CONSENT_META_NAME ] );
+				return (bool) sanitize_text_field(
+					wp_unslash( $_POST[ Gr_Configuration::MARKETING_CONSENT_META_NAME ] )
+				);
 			}
 		}
 

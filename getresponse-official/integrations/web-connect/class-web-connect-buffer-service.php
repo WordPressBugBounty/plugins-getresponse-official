@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\WebConnect;
+namespace GetResponse\WordPress\Integrations\WebConnect;
 
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Integrations\WebConnect\Model\Buffer\Cart_Model;
-use GR\WordPress\Integrations\WebConnect\Model\Buffer\Order_Model;
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Integrations\WebConnect\Model\Buffer\Cart_Model;
+use GetResponse\WordPress\Integrations\WebConnect\Model\Buffer\Order_Model;
 
 class Web_Connect_Buffer_Service {
 

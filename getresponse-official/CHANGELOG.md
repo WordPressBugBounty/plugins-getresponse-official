@@ -1,5 +1,10 @@
 Changelog
 =========
+#### 1.7.0 - 2026-04-17
+- Improved code based on QIT inspection
+- Ensured one-time user metadata migration runs reliably upon plugin update
+- Expose page context for upcoming functionalities
+
 #### 1.6.7 - 2026-04-10
 - Improved custom fields handling
 

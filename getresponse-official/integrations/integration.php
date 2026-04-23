@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations;
+namespace GetResponse\WordPress\Integrations;
 
 interface Integration {
 

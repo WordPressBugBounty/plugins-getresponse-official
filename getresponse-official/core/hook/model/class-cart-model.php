@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core\Hook\Model;
+namespace GetResponse\WordPress\Core\Hook\Model;
 
-use GR\WordPress\Core\Hook\Gr_Hook_Type;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Type;
 
 class Cart_Model implements Model {
 

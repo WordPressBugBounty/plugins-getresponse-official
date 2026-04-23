@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\WebConnect;
+namespace GetResponse\WordPress\Integrations\WebConnect;
 
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Integrations\Integration;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Integrations\Integration;
 use Psr\Log\LoggerInterface;
 use WC_Cart;
 use WC_Order;
-use WC_Product;
 use Throwable;
 
 class Web_Connect_Integration implements Integration {
@@ -21,22 +24,27 @@ class Web_Connect_Integration implements Integration {
 
 	private Order_Service $order_service;
 
+	private Page_Context_Resolver $page_context_resolver;
+
 	private LoggerInterface $logger;
 
 	public function __construct(
 		Gr_Configuration $gr_configuration,
 		Cart_Service $cart_service,
 		Order_Service $order_service,
+		Page_Context_Resolver $page_context_resolver,
 		LoggerInterface $logger
 	) {
-		$this->gr_configuration = $gr_configuration;
-		$this->cart_service     = $cart_service;
-		$this->order_service    = $order_service;
-		$this->logger           = $logger;
+		$this->gr_configuration      = $gr_configuration;
+		$this->cart_service          = $cart_service;
+		$this->order_service         = $order_service;
+		$this->page_context_resolver = $page_context_resolver;
+		$this->logger                = $logger;
 	}
 
 	public function init(): void {
 		add_action( 'wp_enqueue_scripts', array( $this, 'inject_base_snippet' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'inject_page_context' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'inject_category_view_snippet' ) );
 		add_filter( 'woocommerce_after_single_product', array( $this, 'inject_product_view_snippet' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'inject_web_connect_buffered_events' ) );
@@ -166,10 +174,10 @@ class Web_Connect_Integration implements Integration {
 					'name'     => $product->get_name(),
 					'sku'      => $product->get_sku(),
 					'vendor'   => '',
-					'price'    => $this->get_product_price( $product ),
+					'price'    => Functions::get_product_price( $product ),
 					'currency' => get_option( 'woocommerce_currency' ),
 				),
-				'categories' => $this->get_categories( $product ),
+				'categories' => Functions::get_categories( $product ),
 			);
 
 			wp_register_script( 'gr-product-view', false, array(), array(), true );
@@ -203,7 +211,11 @@ class Web_Connect_Integration implements Integration {
 			$buffered_cart      = array();
 			$buffered_order     = array();
 
-			if ( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
+			$method = isset( $_SERVER['REQUEST_METHOD'] )
+				? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) )
+				: '';
+
+			if ( 'POST' !== $method ) {
 				$buffered_cart  = $this->cart_service->get_cart_from_buffer();
 				$buffered_order = $this->order_service->get_order_from_buffer();
 			}
@@ -214,6 +226,10 @@ class Web_Connect_Integration implements Integration {
 
 			if ( ! empty( $buffered_order ) ) {
 				$web_connect_script .= PHP_EOL . "GrTracking('orderPlaced', " . wp_json_encode( $buffered_order ) . ');';
+			}
+
+			if ( empty( $web_connect_script ) ) {
+				return;
 			}
 
 			wp_register_script( 'gr-web-connect-events', false, array(), 1, true );
@@ -228,32 +244,7 @@ class Web_Connect_Integration implements Integration {
 		}
 	}
 
-	private function get_categories( WC_Product $product ): array {
-		$categories = array();
-
-		$terms = get_the_terms( $product->get_id(), 'product_cat' );
-
-		if ( empty( $terms ) ) {
-			return $categories;
-		}
-
-		foreach ( $terms as $category ) {
-			$categories[] = array(
-				'id'   => (string) $category->term_id,
-				'name' => $category->name,
-			);
-		}
-		return $categories;
-	}
-
-	private function get_product_price( WC_Product $product ): string {
-		foreach ( $product->get_children() as $product_children_id ) {
-			$child_product = wc_get_product( $product_children_id );
-			if ( 'publish' === $child_product->get_status() ) {
-				return (string) $child_product->get_price();
-			}
-		}
-
-		return (string) $product->get_price();
+	public function inject_page_context(): void {
+		$this->page_context_resolver->inject_page_context( $this->gr_configuration->get_getresponse_shop_id() );
 	}
 }

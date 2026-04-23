@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core\Hook\Model;
+namespace GetResponse\WordPress\Core\Hook\Model;
 
 interface Model {
 

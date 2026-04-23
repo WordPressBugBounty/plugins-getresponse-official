@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core;
+namespace GetResponse\WordPress\Core;
 
-use GR\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Functions;
 use WP_Error;
 
 class Gr_Configuration_Http_Client {

@@ -2,15 +2,20 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\WPUserProfile;
+namespace GetResponse\WordPress\Integrations\WPUserProfile;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use Exception;
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Core\Hook\Model\User_Model;
-use GR\WordPress\Integrations\Integration;
-use GR\WordPress\Integrations\Woocommerce\Woocommerce_Integration;
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Gr_Nonce_Field;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Integrations\Integration;
+use GetResponse\WordPress\Integrations\Woocommerce\Woocommerce_Integration;
 use Psr\Log\LoggerInterface;
 use WP_User;
 
@@ -43,8 +48,12 @@ class WP_User_Profile_Integration implements Integration {
 		try {
 			$marketing_consent = (int) get_user_meta( $user_id, $marketing_consent_key, true );
 
-			if ( isset( $_POST[ $marketing_consent_key ] ) ) {
-				$new_marketing_consent = (int) sanitize_text_field( $_POST[ $marketing_consent_key ] );
+			if (
+				isset( $_POST[ $marketing_consent_key ] )
+				&& isset( $_POST[ Gr_Nonce_Field::FIELD_NAME ] )
+				&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ Gr_Nonce_Field::FIELD_NAME ] ) ), Gr_Nonce_Field::ACTION_NAME )
+			) {
+				$new_marketing_consent = (int) sanitize_text_field( wp_unslash( $_POST[ $marketing_consent_key ] ) );
 				if ( $marketing_consent !== $new_marketing_consent ) {
 					update_user_meta( $user_id, $marketing_consent_key, $new_marketing_consent );
 					$marketing_consent = $new_marketing_consent;

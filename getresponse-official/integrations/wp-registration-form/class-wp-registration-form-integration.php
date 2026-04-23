@@ -2,16 +2,21 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\WPRegistrationForm;
+namespace GetResponse\WordPress\Integrations\WPRegistrationForm;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use Exception;
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
-use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer_Exception;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Core\Hook\Model\User_Model;
-use GR\WordPress\Integrations\Integration;
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Gr_Nonce_Field;
+use GetResponse\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
+use GetResponse\WordPress\Core\Gr_User_Marketing_Consent_Buffer_Exception;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Integrations\Integration;
 use Psr\Log\LoggerInterface;
 
 class WP_Registration_Form_Integration implements Integration {
@@ -38,7 +43,14 @@ class WP_Registration_Form_Integration implements Integration {
 			try {
 				$gr_marketing_consent = Gr_User_Marketing_Consent_Buffer::get_user_marketing_consent();
 			} catch ( Gr_User_Marketing_Consent_Buffer_Exception $buffer_exception ) {
-				$gr_marketing_consent = isset( $_POST[ $marketing_consent_key ] ) && (bool) sanitize_text_field( $_POST[ $marketing_consent_key ] );
+				$gr_marketing_consent = false;
+				if (
+					isset( $_POST[ $marketing_consent_key ] )
+					&& isset( $_POST[ Gr_Nonce_Field::FIELD_NAME ] )
+					&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ Gr_Nonce_Field::FIELD_NAME ] ) ), Gr_Nonce_Field::ACTION_NAME )
+				) {
+					$gr_marketing_consent = (bool) sanitize_text_field( wp_unslash( $_POST[ $marketing_consent_key ] ) );
+				}
 			}
 
 			if ( $gr_marketing_consent ) {

@@ -2,23 +2,28 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core;
+namespace GetResponse\WordPress\Core;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use Exception;
-use GR\WordPress\Controllers\GR_API_Controller;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Core\Hook\Gr_Hook_Client;
-use GR\WordPress\Core\logger\File_Logger;
-use GR\WordPress\Core\logger\Gr_Logger_Configuration;
-use GR\WordPress\Integrations\ContactForm7\Contact_Form_7_Integration;
-use GR\WordPress\Integrations\WebConnect\Cart_Service;
-use GR\WordPress\Integrations\WebConnect\Order_Service;
-use GR\WordPress\Integrations\WebConnect\Web_Connect_Integration;
-use GR\WordPress\Integrations\WebConnect\Web_Connect_Buffer_Service;
-use GR\WordPress\Integrations\Woocommerce\Gr_Cart_Service;
-use GR\WordPress\Integrations\Woocommerce\Woocommerce_Integration;
-use GR\WordPress\Integrations\WPRegistrationForm\WP_Registration_Form_Integration;
-use GR\WordPress\Integrations\WPUserProfile\WP_User_Profile_Integration;
+use GetResponse\WordPress\Controllers\GR_API_Controller;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Client;
+use GetResponse\WordPress\Core\logger\File_Logger;
+use GetResponse\WordPress\Core\logger\Gr_Logger_Configuration;
+use GetResponse\WordPress\Integrations\ContactForm7\Contact_Form_7_Integration;
+use GetResponse\WordPress\Integrations\WebConnect\Cart_Service;
+use GetResponse\WordPress\Integrations\WebConnect\Order_Service;
+use GetResponse\WordPress\Integrations\WebConnect\Page_Context_Resolver;
+use GetResponse\WordPress\Integrations\WebConnect\Web_Connect_Integration;
+use GetResponse\WordPress\Integrations\WebConnect\Web_Connect_Buffer_Service;
+use GetResponse\WordPress\Integrations\Woocommerce\Gr_Cart_Service;
+use GetResponse\WordPress\Integrations\Woocommerce\Woocommerce_Integration;
+use GetResponse\WordPress\Integrations\WPRegistrationForm\WP_Registration_Form_Integration;
+use GetResponse\WordPress\Integrations\WPUserProfile\WP_User_Profile_Integration;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -46,9 +51,20 @@ class Getresponse_For_Wp {
 			$this->register_integrations();
 			$this->check_if_old_plugin_is_installed();
 			add_filter( 'rest_user_query', array( $this, 'add_updated_at_filter' ), 10, 2 );
+			add_action( 'admin_init', array( $this, 'run_migration_if_not_executed' ) );
 		} catch ( Exception $exception ) {
 			$this->logger->error( 'Run error', Functions::get_error_context( $exception ) );
 		}
+	}
+
+	public function run_migration_if_not_executed(): void {
+		if ( (bool) get_option( 'gr_updated_at_migration_executed' ) ) {
+			return;
+		}
+
+		$this->set_gr_updated_at_for_existing_users();
+
+		update_option( 'gr_updated_at_migration_executed', true );
 	}
 
 	public function set_gr_updated_at_for_existing_users() {
@@ -58,6 +74,7 @@ class Getresponse_For_Wp {
 		$current_time = current_time( 'mysql' );
 
 		$start_time = microtime( true );
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk insert for performance, safe and intentional.
 		$wpdb->query(
 			$wpdb->prepare(
 				"INSERT INTO {$wpdb->usermeta} (user_id, meta_key, meta_value)
@@ -80,6 +97,7 @@ class Getresponse_For_Wp {
 
 		$meta_key = Gr_Configuration::USER_UPDATED_AT_META_NAME;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk delete for performance; no equivalent in WP API.
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->usermeta} WHERE meta_key = %s",
@@ -105,6 +123,7 @@ class Getresponse_For_Wp {
 			$gr_configuration,
 			new Cart_Service( $gr_configuration, $gr_cart_service, $buffer_service ),
 			new Order_Service( $gr_configuration, $gr_cart_service, $buffer_service ),
+			new Page_Context_Resolver(),
 			$this->logger
 		) )->init();
 	}
@@ -129,7 +148,7 @@ class Getresponse_For_Wp {
 			if ( $plugin['Name'] === 'GetResponse for WordPress' ) {
 
 				$class   = 'notice notice-error';
-				$message = __( 'We\'ve detected you\'re using an old GetResponse plugin for WordPress. To ensure your integration works properly, uninstall the outdated plugin.', 'sample-text-domain' );
+				$message = __( 'We\'ve detected you\'re using an old GetResponse plugin for WordPress. To ensure your integration works properly, uninstall the outdated plugin.', 'getresponse-official' );
 
 				add_action(
 					'admin_notices',

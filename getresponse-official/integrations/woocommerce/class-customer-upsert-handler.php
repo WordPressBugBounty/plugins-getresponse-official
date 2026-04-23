@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\Woocommerce;
+namespace GetResponse\WordPress\Integrations\Woocommerce;
 
 use Exception;
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Hook\Gr_Hook_Exception;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Exception;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\Hook\Model\User_Model;
 use Psr\Log\LoggerInterface;
 use WC_Customer;
 

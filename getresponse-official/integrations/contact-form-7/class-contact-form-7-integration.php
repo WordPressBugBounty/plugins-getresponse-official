@@ -2,14 +2,19 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\ContactForm7;
+namespace GetResponse\WordPress\Integrations\ContactForm7;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use Exception;
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Core\Hook\Model\Contact_Model;
-use GR\WordPress\Integrations\Integration;
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Gr_Nonce_Field;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\Hook\Model\Contact_Model;
+use GetResponse\WordPress\Integrations\Integration;
 use Psr\Log\LoggerInterface;
 
 class Contact_Form_7_Integration implements Integration {
@@ -32,6 +37,8 @@ class Contact_Form_7_Integration implements Integration {
 		if ( $this->gr_configuration->integrate_with_contact_form_7() && $this->gr_configuration->is_live_sync_active() ) {
 			add_action( 'wpcf7_init', array( $this, 'wpcf7_init' ) );
 			add_action( 'wpcf7_mail_sent', array( $this, 'handle_email_sent' ), 1 );
+
+			add_filter( 'wpcf7_form_elements', array( $this, 'add_nonce_to_cf7_form' ) );
 		}
 	}
 
@@ -63,10 +70,30 @@ class Contact_Form_7_Integration implements Integration {
 		return wp_kses( $html, Functions::get_allowed_html_elements() );
 	}
 
+	public function add_nonce_to_cf7_form( string $content ): string {
+		$nonce = wp_nonce_field(
+			Gr_Nonce_Field::ACTION_NAME,
+			Gr_Nonce_Field::FIELD_NAME,
+			true,
+			false
+		);
+
+		return $content . $nonce;
+	}
+
 	public function handle_email_sent(): void {
 
 		try {
-			$email = isset( $_POST['email'] ) ? sanitize_text_field( $_POST['email'] ) : null;
+			if (
+				! isset( $_POST[ Gr_Nonce_Field::FIELD_NAME ] )
+				|| ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ Gr_Nonce_Field::FIELD_NAME ] ) ), Gr_Nonce_Field::ACTION_NAME )
+			) {
+				return;
+			}
+
+			$email = isset( $_POST['email'] )
+				? sanitize_email( wp_unslash( $_POST['email'] ) )
+				: null;
 
 			if ( is_null( $email ) ) {
 				return;

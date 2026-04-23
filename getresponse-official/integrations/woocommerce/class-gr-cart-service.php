@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\Woocommerce;
+namespace GetResponse\WordPress\Integrations\Woocommerce;
 
-use GR\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Functions;
 
 class Gr_Cart_Service {
 	private const CART_ID_NAME     = 'gr4wp_cart_id';

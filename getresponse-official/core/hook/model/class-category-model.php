@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core\Hook\Model;
+namespace GetResponse\WordPress\Core\Hook\Model;
 
 class Category_Model implements Model {
 
@@ -17,7 +17,7 @@ class Category_Model implements Model {
 		int $parent_id,
 		string $name,
 		bool $is_default = false,
-		string $url = null
+		?string $url = null
 	) {
 		$this->id         = $id;
 		$this->parent_id  = $parent_id;

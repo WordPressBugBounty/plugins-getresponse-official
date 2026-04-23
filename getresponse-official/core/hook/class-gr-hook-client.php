@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core\Hook;
+namespace GetResponse\WordPress\Core\Hook;
 
-use GR\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Functions;
 use WP_Error;
 
 class Gr_Hook_Client {
 
-	private const API_APP_SECRET = '010b02c432482c288dca40f5dae0b132';
-	private const API_TIMEOUT    = 30;
-	private const API_REDIRECTS  = 1;
+	private const API_TIMEOUT   = 30;
+	private const API_REDIRECTS = 1;
 
 	private string $site_url;
 	private array $request_body_hashes = array();
@@ -40,7 +39,6 @@ class Gr_Hook_Client {
 			'headers'     => array(
 				'Content-Type'       => 'application/json',
 				'X-Shop-Domain'      => $this->site_url,
-				'X-Hmac-Sha256'      => $this->create_hmac( $body ),
 				'X-Timestamp'        => gmdate( 'Y-m-d H:i:s.' ) . gettimeofday()['usec'],
 				'X-Platform-Version' => Functions::get_wp_version(),
 				'X-PHP-Version'      => Functions::get_php_version(),
@@ -59,18 +57,6 @@ class Gr_Hook_Client {
 		}
 
 		$this->request_body_hashes[ $hash ] = true;
-	}
-
-	private function create_hmac( array $body ): string {
-        // phpcs:ignore
-        return base64_encode(
-			hash_hmac(
-				'sha256',
-				wp_json_encode( $body ),
-				self::API_APP_SECRET,
-				true
-			)
-		);
 	}
 
 	private function create_hash_from_body( array $body ): string {

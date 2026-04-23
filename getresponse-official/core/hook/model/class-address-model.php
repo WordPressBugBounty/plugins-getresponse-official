@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core\Hook\Model;
+namespace GetResponse\WordPress\Core\Hook\Model;
 
 class Address_Model implements Model {
 

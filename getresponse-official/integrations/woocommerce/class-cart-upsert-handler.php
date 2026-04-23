@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\Woocommerce;
+namespace GetResponse\WordPress\Integrations\Woocommerce;
 
 use Exception;
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Hook\Gr_Hook_Exception;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Core\Hook\Model\Address_Model;
-use GR\WordPress\Core\Hook\Model\Cart_Model;
-use GR\WordPress\Core\Hook\Model\Line_Model;
-use GR\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Exception;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\Hook\Model\Address_Model;
+use GetResponse\WordPress\Core\Hook\Model\Cart_Model;
+use GetResponse\WordPress\Core\Hook\Model\Line_Model;
+use GetResponse\WordPress\Core\Hook\Model\User_Model;
 use Psr\Log\LoggerInterface;
 use WC_Cart;
 
@@ -114,7 +114,7 @@ class Cart_Upsert_Handler {
 			round( (float) $cart->get_total( '' ), 2 ),
 			get_woocommerce_currency(),
 			$this->build_url( $cart, $cart_id ),
-			$_COOKIE['gaVisitorUuid'] ?? null
+			isset( $_COOKIE['gaVisitorUuid'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['gaVisitorUuid'] ) ) : null,
 		);
 
 		if ( ! $model->is_valuable() ) {

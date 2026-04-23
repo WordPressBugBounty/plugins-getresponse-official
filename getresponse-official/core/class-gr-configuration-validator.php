@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core;
+namespace GetResponse\WordPress\Core;
 
 class Gr_Configuration_Validator {
 

@@ -1,6 +1,7 @@
 <?php
 
-use GR\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Gr_Nonce_Field;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -24,6 +25,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 				class="<?php echo esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ); ?>">
 				<?php echo esc_html( $marketing_consent_text ); ?>
 			</label>
+
+			<?php wp_nonce_field( Gr_Nonce_Field::ACTION_NAME, Gr_Nonce_Field::FIELD_NAME ); ?>
 		</td>
 	</tr>
 </table>

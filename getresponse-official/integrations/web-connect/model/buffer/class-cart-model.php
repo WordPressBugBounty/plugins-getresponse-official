@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\WebConnect\Model\Buffer;
+namespace GetResponse\WordPress\Integrations\WebConnect\Model\Buffer;
 
 class Cart_Model {
 

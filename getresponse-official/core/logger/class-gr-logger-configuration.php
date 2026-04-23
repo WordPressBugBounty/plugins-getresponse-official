@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Core\logger;
+namespace GetResponse\WordPress\Core\logger;
 
 class Gr_Logger_Configuration {
 

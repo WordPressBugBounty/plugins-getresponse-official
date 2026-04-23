@@ -26,9 +26,9 @@
  */
 
 // If uninstall not called from WordPress, then exit.
-use GR\WordPress\Core\Getresponse_For_Wp;
-use GR\WordPress\Core\Gr_Rest_Api_Service;
-use GR\WordPress\Core\logger\Gr_Logger_Configuration;
+use GetResponse\WordPress\Core\Getresponse_For_Wp;
+use GetResponse\WordPress\Core\Gr_Rest_Api_Service;
+use GetResponse\WordPress\Core\logger\Gr_Logger_Configuration;
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;

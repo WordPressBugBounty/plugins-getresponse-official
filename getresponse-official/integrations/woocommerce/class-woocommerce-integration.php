@@ -2,13 +2,18 @@
 
 declare(strict_types=1);
 
-namespace GR\WordPress\Integrations\Woocommerce;
+namespace GetResponse\WordPress\Integrations\Woocommerce;
 
-use GR\WordPress\Core\Functions;
-use GR\WordPress\Core\Gr_Configuration;
-use GR\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
-use GR\WordPress\Core\Hook\Gr_Hook_Service;
-use GR\WordPress\Integrations\Integration;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use GetResponse\WordPress\Core\Functions;
+use GetResponse\WordPress\Core\Gr_Configuration;
+use GetResponse\WordPress\Core\Gr_Nonce_Field;
+use GetResponse\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
+use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Integrations\Integration;
 use Psr\Log\LoggerInterface;
 use WC_Customer;
 use WC_Order;
@@ -35,7 +40,16 @@ class Woocommerce_Integration implements Integration {
 	}
 
 	public static function is_woo_commerce_installed(): bool {
-		return in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
+		return in_array(
+			'woocommerce/woocommerce.php',
+			self::get_active_plugins(),
+			true
+		);
+	}
+
+	private static function get_active_plugins(): array {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+		return (array) apply_filters( 'active_plugins', get_option( 'active_plugins', array() ) );
 	}
 
 	public function init(): void {
@@ -107,6 +121,7 @@ class Woocommerce_Integration implements Integration {
 	}
 
 	public function handle_cart_upsert(): void {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only
 		if ( ! empty( $_GET['grcart'] ) || false === self::is_woo_commerce_installed() ) {
 			return;
 		}
@@ -142,6 +157,16 @@ class Woocommerce_Integration implements Integration {
 			return;
 		}
 
+		$default_consent_value = '';
+
+		if (
+			isset( $_POST[ $marketing_consent_key ] )
+			&& isset( $_POST[ Gr_Nonce_Field::FIELD_NAME ] )
+			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ Gr_Nonce_Field::FIELD_NAME ] ) ), Gr_Nonce_Field::ACTION_NAME )
+		) {
+			$default_consent_value = sanitize_text_field( wp_unslash( $_POST[ $marketing_consent_key ] ) );
+		}
+
 		woocommerce_form_field(
 			esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME ),
 			array(
@@ -153,8 +178,10 @@ class Woocommerce_Integration implements Integration {
 				'input_class' => array( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ),
 				'label_class' => array( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ),
 			),
-			isset( $_POST[ $marketing_consent_key ] ) ? sanitize_text_field( $_POST[ $marketing_consent_key ] ) : ''
+			$default_consent_value
 		);
+
+		wp_nonce_field( Gr_Nonce_Field::ACTION_NAME, Gr_Nonce_Field::FIELD_NAME );
 	}
 
 	public function handle_customer_upsert( int $user_id ): void {
@@ -203,7 +230,8 @@ class Woocommerce_Integration implements Integration {
 			return false;
 		}
 
-		$gr_cart = $_GET['grcart'] ?? null;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only
+		$gr_cart = isset( $_GET['grcart'] ) ? sanitize_text_field( wp_unslash( $_GET['grcart'] ) ) : null;
 		if ( empty( $gr_cart ) ) {
 			return false;
 		}
