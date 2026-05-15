@@ -19,7 +19,7 @@ use WC_Product_Variation;
 
 class Product_Upsert_Handler {
 	private const PRODUCT_TYPE_VARIABLE = 'variable';
-	private const MAX_DESC_LENGTH       = 1000;
+	private const MAX_DESC_LENGTH       = 10000;
 
 	private const NOT_ALLOWED_PRODUCT_TYPES = array(
 		'variation',

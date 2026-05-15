@@ -1,4 +1,7 @@
 *** Changelog ***
+2026-05-12 - version 1.7.2
+- Added support for Wordpress 7.0
+
 2026-04-23 - version 1.7.1
 - Optimized the plugin package by removing internal configuration files
 
