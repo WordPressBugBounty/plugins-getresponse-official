@@ -236,10 +236,12 @@ class Woocommerce_Integration implements Integration {
 			return false;
 		}
 
+		$redirect_url = $this->get_cart_url_with_utm_params();
+
         // phpcs:ignore
         $decoded_gr_cart = json_decode( base64_decode( $gr_cart ), true );
 		if ( ! $decoded_gr_cart || empty( $decoded_gr_cart['cartItems'] ) || empty( $decoded_gr_cart['cartId'] ) ) {
-			return wp_safe_redirect( wc_get_cart_url() );
+			return wp_safe_redirect( $redirect_url );
 		}
 
 		$cart->empty_cart();
@@ -249,7 +251,7 @@ class Woocommerce_Integration implements Integration {
 
 		$this->gr_cart_service->set_cart_id( $decoded_gr_cart['cartId'] );
 
-		return wp_safe_redirect( wc_get_cart_url() );
+		return wp_safe_redirect( $redirect_url );
 	}
 
 	public function add_updated_at_filter( $args, $request ) {
@@ -288,6 +290,20 @@ class Woocommerce_Integration implements Integration {
 		$marketing_consent = $params['additional_fields'][ $marketing_consent_field ];
 
 		Gr_User_Marketing_Consent_Buffer::add_user_marketing_consent( $marketing_consent );
+	}
+
+	private function get_cart_url_with_utm_params(): string {
+		$utm_params = array();
+		$utm_keys   = array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content' );
+		foreach ( $utm_keys as $key ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only
+			if ( isset( $_GET[ $key ] ) ) {
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only
+				$utm_params[ $key ] = sanitize_text_field( wp_unslash( $_GET[ $key ] ) );
+			}
+		}
+
+		return empty( $utm_params ) ? wc_get_cart_url() : add_query_arg( $utm_params, wc_get_cart_url() );
 	}
 
 	private function add_woocommerce_marketing_consent_checkbox_for_checkout_blocks(): void {

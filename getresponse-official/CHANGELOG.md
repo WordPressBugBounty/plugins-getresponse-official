@@ -1,5 +1,8 @@
 Changelog
 =========
+#### 1.7.3 - 2026-05-19
+- Added support for GA UTMs in cart recovery endpoint
+
 #### 1.7.2 - 2026-05-12
 - Added support for Wordpress 7.0
 
