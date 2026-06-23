@@ -221,11 +221,13 @@ class Web_Connect_Integration implements Integration {
 			}
 
 			if ( ! empty( $buffered_cart ) ) {
-				$web_connect_script .= PHP_EOL . "GrTracking('cartUpdate', " . wp_json_encode( $buffered_cart ) . ');';
+				$buffered_cart['shop'] = array( 'id' => $getresponse_shop_id );
+				$web_connect_script   .= PHP_EOL . "GrTracking('cartUpdate', " . wp_json_encode( $buffered_cart ) . ');';
 			}
 
 			if ( ! empty( $buffered_order ) ) {
-				$web_connect_script .= PHP_EOL . "GrTracking('orderPlaced', " . wp_json_encode( $buffered_order ) . ');';
+				$buffered_order['shop'] = array( 'id' => $getresponse_shop_id );
+				$web_connect_script    .= PHP_EOL . "GrTracking('orderPlaced', " . wp_json_encode( $buffered_order ) . ');';
 			}
 
 			if ( empty( $web_connect_script ) ) {

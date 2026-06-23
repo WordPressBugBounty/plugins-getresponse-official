@@ -29,6 +29,8 @@ class Page_Context_Resolver {
 			$this->inject_cart_context( $getresponse_shop_id );
 			return;
 		}
+
+		$this->inject_fallback_context( $getresponse_shop_id );
 	}
 
 	private function inject_category_context( string $getresponse_shop_id ): void {
@@ -42,7 +44,7 @@ class Page_Context_Resolver {
 			'category',
 			array(
 				'category' => array(
-					'id'   => $category->term_id,
+					'id'   => (string) $category->term_id,
 					'name' => $category->name,
 				),
 			)
@@ -72,14 +74,14 @@ class Page_Context_Resolver {
 			'product',
 			array(
 				'product' => array(
-					'id'       => $product->get_id(),
-					'name'     => $product->get_name(),
-					'sku'      => $product->get_sku(),
-					'price'    => (float) Functions::get_product_price( $product ),
-					'currency' => get_woocommerce_currency(),
-					'category' => array_map(
+					'id'         => (string) $product->get_id(),
+					'name'       => $product->get_name(),
+					'sku'        => $product->get_sku(),
+					'price'      => (float) Functions::get_product_price( $product ),
+					'currency'   => get_woocommerce_currency(),
+					'categories' => array_map(
 						function ( $category ) {
-							$category['id'] = (int) $category['id'];
+							$category['id'] = (string) $category['id'];
 							return $category;
 						},
 						Functions::get_categories( $product )
@@ -104,13 +106,13 @@ class Page_Context_Resolver {
 			}
 
 			$products_in_cart[] = array(
-				'product_id' => $cart_item['product_id'],
-				'variant_id' => $cart_item['variation_id'] > 0 ? $cart_item['variation_id'] : null,
-				'quantity'   => $cart_item['quantity'],
-				'name'       => $product->get_name(),
-				'sku'        => $product->get_sku(),
-				'price'      => (float) Functions::get_product_price( $product ),
-				'line_total' => $cart_item['line_total'],
+				'productId' => (string) $cart_item['product_id'],
+				'variantId' => $cart_item['variation_id'] > 0 ? (string) $cart_item['variation_id'] : null,
+				'quantity'  => (int) $cart_item['quantity'],
+				'name'      => $product->get_name(),
+				'sku'       => $product->get_sku(),
+				'price'     => (float) Functions::get_product_price( $product ),
+				'lineTotal' => (float) $cart_item['line_total'],
 			);
 		}
 
@@ -127,11 +129,19 @@ class Page_Context_Resolver {
 		);
 	}
 
+	private function inject_fallback_context( string $getresponse_shop_id ): void {
+		$this->inject(
+			$getresponse_shop_id,
+			'other',
+			array()
+		);
+	}
+
 	private function inject( string $getresponse_shop_id, string $page_type, array $context ): void {
 		$page_context = array(
-			'schemaVersion' => '1.0',
-			'page'          => array( 'type' => $page_type ),
-			'context'       => array_merge(
+			'page'    => array( 'type' => $page_type ),
+			'context' => array_merge(
+				array( 'type' => $page_type ),
 				array( 'shop' => array( 'id' => $getresponse_shop_id ) ),
 				$context
 			),

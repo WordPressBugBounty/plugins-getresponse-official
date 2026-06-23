@@ -1,5 +1,8 @@
 Changelog
 =========
+#### 1.7.4 - 2026-06-23
+- Expose page context for upcoming functionalities
+
 #### 1.7.3 - 2026-05-19
 - Added support for GA UTMs in cart recovery endpoint
 
