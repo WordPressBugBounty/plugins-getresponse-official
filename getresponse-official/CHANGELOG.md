@@ -1,5 +1,8 @@
 Changelog
 =========
+#### 1.8.0 - 2026-07-21
+- Added marketing consent checkbox to WordPress and WooCommerce User Account details page
+
 #### 1.7.4 - 2026-06-23
 - Expose page context for upcoming functionalities
 

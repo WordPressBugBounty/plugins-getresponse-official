@@ -147,7 +147,7 @@ class Page_Context_Resolver {
 			),
 		);
 
-		wp_register_script( 'gr-page-context', false, array(), array(), true );
+		wp_register_script( 'gr-page-context', false, array(), GETRESPONSE_FOR_WP_VERSION, true );
 		wp_enqueue_script( 'gr-page-context' );
 
 		wp_add_inline_script(

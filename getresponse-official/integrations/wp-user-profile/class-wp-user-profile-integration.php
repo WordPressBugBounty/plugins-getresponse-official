@@ -32,6 +32,7 @@ class WP_User_Profile_Integration implements Integration {
 	}
 
 	public function init(): void {
+		add_action( 'show_user_profile', array( $this, 'extend_own_user_profile' ) );
 		add_action( 'edit_user_profile', array( $this, 'extend_user_profile' ) );
 		add_action( 'profile_update', array( $this, 'handle_profile_update' ), 10 );
 		add_action( 'profile_update', array( $this, 'set_updated_at' ), 20 );
@@ -83,10 +84,23 @@ class WP_User_Profile_Integration implements Integration {
 		}
 	}
 
-	public function extend_user_profile( WP_User $user ): void {
-		$is_gr_marketing_consent_checked = (bool) get_user_meta( $user->ID, Gr_Configuration::MARKETING_CONSENT_META_NAME, true );
-		$marketing_consent_text          = $this->gr_configuration->get_marketing_consent_text();
+	public function extend_own_user_profile( WP_User $user ): void {
+		$this->render_user_profile( $user, false );
+	}
 
-		require_once __DIR__ . '/partials/user-profile.php';
+	public function extend_user_profile( WP_User $user ): void {
+		$this->render_user_profile( $user, true );
+	}
+
+	private function render_user_profile( WP_User $user, bool $show_gr_header ): void {
+		$marketing_consent_text = $this->gr_configuration->get_marketing_consent_text();
+
+		if ( empty( $marketing_consent_text ) ) {
+			return;
+		}
+
+		$is_gr_marketing_consent_checked = (bool) get_user_meta( $user->ID, Gr_Configuration::MARKETING_CONSENT_META_NAME, true );
+
+		require __DIR__ . '/partials/user-profile.php';
 	}
 }

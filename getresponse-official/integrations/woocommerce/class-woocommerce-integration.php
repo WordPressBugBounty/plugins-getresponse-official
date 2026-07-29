@@ -67,6 +67,7 @@ class Woocommerce_Integration implements Integration {
 		add_action( 'woocommerce_cart_item_removed', array( $this, 'handle_cart_upsert' ), 30, );
 		add_action( 'woocommerce_update_cart_action_cart_updated', array( $this, 'handle_cart_upsert' ), 30, );
 
+		add_action( 'woocommerce_edit_account_form', array( $this, 'add_edit_account_marketing_consent_checkbox' ) );
 		add_action( 'woocommerce_register_form', array( $this, 'add_woocommerce_marketing_consent_checkbox' ) );
 		add_action( 'woocommerce_after_order_notes', array( $this, 'add_marketing_consent_checkbox' ) );
 
@@ -141,6 +142,42 @@ class Woocommerce_Integration implements Integration {
 			$this->logger
 		);
 		$handler->handle( $cart );
+	}
+
+	public function add_edit_account_marketing_consent_checkbox(): void {
+		$marketing_consent_text = $this->gr_configuration->get_marketing_consent_text();
+
+		if ( empty( $marketing_consent_text ) ) {
+			return;
+		}
+
+		$current_consent = (string) get_user_meta(
+			get_current_user_id(),
+			Gr_Configuration::MARKETING_CONSENT_META_NAME,
+			true
+		);
+
+		$hidden_input = sprintf(
+			'<input type="hidden" name="%s" value="0" />',
+			esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME )
+		);
+		echo wp_kses( $hidden_input, Functions::get_allowed_html_elements() );
+
+		woocommerce_form_field(
+			esc_attr( Gr_Configuration::MARKETING_CONSENT_META_NAME ),
+			array(
+				'type'        => 'checkbox',
+				'required'    => false,
+				'label'       => esc_attr( $marketing_consent_text ),
+				'value'       => '1',
+				'class'       => array( Gr_Configuration::CSS_MARKETING_CONSENT_WRAPPER_CLASS ),
+				'input_class' => array( Gr_Configuration::CSS_MARKETING_CONSENT_CHECKBOX_CLASS ),
+				'label_class' => array( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ),
+			),
+			$current_consent
+		);
+
+		wp_nonce_field( Gr_Nonce_Field::ACTION_NAME, Gr_Nonce_Field::FIELD_NAME );
 	}
 
 	public function add_marketing_consent_checkbox(): void {

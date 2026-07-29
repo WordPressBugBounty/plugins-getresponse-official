@@ -92,7 +92,7 @@ class Web_Connect_Integration implements Integration {
 				? "GrTracking('setUserId', '" . $user->user_email . "');"
 				: "GrTracking('push');";
 
-			wp_register_script( 'gr-tracking-code', false, array(), array(), false );
+			wp_register_script( 'gr-tracking-code', false, array(), GETRESPONSE_FOR_WP_VERSION, false );
 			wp_enqueue_script( 'gr-tracking-code' );
 
 			wp_add_inline_script(
@@ -139,7 +139,7 @@ class Web_Connect_Integration implements Integration {
 				'name' => $category->name,
 			);
 
-			wp_register_script( 'gr-category-view', false, array(), array(), true );
+			wp_register_script( 'gr-category-view', false, array(), GETRESPONSE_FOR_WP_VERSION, true );
 			wp_enqueue_script( 'gr-category-view' );
 
 			wp_add_inline_script(
@@ -180,7 +180,7 @@ class Web_Connect_Integration implements Integration {
 				'categories' => Functions::get_categories( $product ),
 			);
 
-			wp_register_script( 'gr-product-view', false, array(), array(), true );
+			wp_register_script( 'gr-product-view', false, array(), GETRESPONSE_FOR_WP_VERSION, true );
 			wp_enqueue_script( 'gr-product-view' );
 
 			wp_add_inline_script(

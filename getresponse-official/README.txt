@@ -1,10 +1,10 @@
-=== Email marketing for WordPress by GetResponse Official ===
+=== GetResponse Official ===
 Contributors: GetResponse
 Tags: getresponse, email marketing, ecommerce, marketing, newsletter
 Requires at least: 5.6
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.6.7
+Stable tag: 1.8.0
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -163,6 +163,29 @@ How to set up the integration in GetResponse:
 For more detailed instructions, please visit [our dedicated FAQ](https://www.getresponse.com/help/how-to-integrate-wordpress-with-getresponse.html).
 
 == Changelog ==
+= 1.8.0 =
+* Added marketing consent checkbox to WordPress and WooCommerce User Account details page
+
+= 1.7.4 =
+* Expose page context for upcoming functionalities
+
+= 1.7.3 =
+* Added support for GA UTMs in cart recovery endpoint
+
+= 1.7.2 =
+* Added support for Wordpress 7.0
+
+= 1.7.1 =
+* Optimized the plugin package by removing internal configuration files
+
+= 1.7.0 =
+* Improved code based on QIT inspection
+* Ensured one-time user metadata migration runs upon plugin update
+* Expose page context for upcoming functionalities
+
+= 1.6.7 =
+* Improved custom fields handling
+
 = 1.6.5 =
 * Fixed error for missing product in order
 * Added error handling in webConnect integration

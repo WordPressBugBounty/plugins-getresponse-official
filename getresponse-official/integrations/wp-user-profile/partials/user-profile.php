@@ -8,11 +8,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?>
-<h2>GetResponse</h2>
+<?php if ( $show_gr_header ) : ?>
+	<h2>GetResponse</h2>
+<?php endif; ?>
 
 <table class="form-table" role="presentation">
 	<tr class="user-rich-editing-wrap">
-		<th scope="row">Marketing Consent</th>
+		<?php if ( $show_gr_header ) : ?>
+			<th scope="row">Marketing Consent</th>
+		<?php endif; ?>
+
 		<td>
 			<label class="<?php echo esc_attr( Gr_Configuration::CSS_MARKETING_CONSENT_LABEL_CLASS ); ?>">
 				<input type="hidden" name="<?php echo esc_html( Gr_Configuration::MARKETING_CONSENT_META_NAME ); ?>" value="0">
