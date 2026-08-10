@@ -4,7 +4,7 @@ Tags: getresponse, email marketing, ecommerce, marketing, newsletter
 Requires at least: 5.6
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.8.0
+Stable tag: 1.8.1
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -163,6 +163,11 @@ How to set up the integration in GetResponse:
 For more detailed instructions, please visit [our dedicated FAQ](https://www.getresponse.com/help/how-to-integrate-wordpress-with-getresponse.html).
 
 == Changelog ==
+= 1.8.1 =
+* Added plugin, WordPress, WooCommerce and PHP versions to the configuration endpoint response
+* Added integration name header to configuration requests
+* Stopped clearing HTTP request filters registered by other plugins during configuration requests
+
 = 1.8.0 =
 * Added marketing consent checkbox to WordPress and WooCommerce User Account details page
 

@@ -1,5 +1,10 @@
 Changelog
 =========
+#### 1.8.1 - 2026-07-30
+- Added plugin, WordPress, WooCommerce and PHP versions to the configuration endpoint response
+- Added integration name header to configuration requests
+- Stopped clearing HTTP request filters registered by other plugins during configuration requests
+
 #### 1.8.0 - 2026-07-21
 - Added marketing consent checkbox to WordPress and WooCommerce User Account details page
 

@@ -154,15 +154,20 @@ class GR_API_Controller extends WP_REST_Controller {
 
 	public function get_configuration(): array {
 		return array(
-			'version'       => $this->version,
-			'configuration' => $this->gr_rest_api_service->get_configuration()->to_array(),
+			'plugin_version'       => $this->version,
+			'wordpress_version'    => get_bloginfo( 'version' ),
+			'woo_commerce_version' => defined( 'WC_VERSION' ) ? WC_VERSION : '',
+			'php_version'          => phpversion(),
+			'configuration'        => $this->gr_rest_api_service->get_configuration()->to_array(),
 		);
 	}
 
 	public function update_configuration( $request ): WP_REST_Response {
+		$configuration = Gr_Configuration::make_from_array( $request->get_params() );
+
 		try {
 			$this->configuration_validator->validate(
-				$request->get_params(),
+				$configuration->to_array(),
 				$request->get_headers()
 			);
 		} catch ( Gr_Configuration_Validator_Exception $e ) {
@@ -173,7 +178,6 @@ class GR_API_Controller extends WP_REST_Controller {
 				400
 			);
 		}
-		$configuration = Gr_Configuration::make_from_array( $request->get_params() );
 		$this->gr_rest_api_service->update_configuration( $configuration );
 
 		return new WP_REST_Response(

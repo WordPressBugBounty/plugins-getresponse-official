@@ -11,6 +11,7 @@ class Gr_Configuration_Http_Client {
 	private const API_TIMEOUT       = 30;
 	private const API_REDIRECTS     = 1;
 	const X_CONFIGURATION_SIGNATURE = 'x_configuration_signature';
+	private const INTEGRATION_NAME  = 'wordpresshybrid';
 	private string $site_url;
 
 	public function __construct( string $site_url ) {
@@ -33,14 +34,10 @@ class Gr_Configuration_Http_Client {
 				'X-Platform-Version'        => Functions::get_wp_version(),
 				'X-PHP-Version'             => Functions::get_php_version(),
 				'X-Plugin-Version'          => Functions::get_plugin_version(),
+				'X-Integration-Name'        => self::INTEGRATION_NAME,
 				'X-Configuration-Signature' => $this->get_configuration_signature( $headers ),
 			),
 		);
-
-		remove_all_filters( 'http_request_args' );
-		remove_all_filters( 'http_request_headers' );
-		remove_all_filters( 'http_api_curl' );
-		remove_all_filters( 'pre_http_request' );
 
 		$response = wp_remote_request( $url, $args );
 
