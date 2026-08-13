@@ -1,4 +1,7 @@
 *** Changelog ***
+2026-08-13 - version 1.8.2
+- Added support for Wordpress 7.0
+
 2026-07-30 - version 1.8.1
 - Added plugin, WordPress, WooCommerce and PHP versions to the configuration endpoint response
 - Added integration name header to configuration requests
