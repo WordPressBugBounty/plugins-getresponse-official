@@ -1,5 +1,9 @@
 Changelog
 =========
+#### 1.8.3 - 2026-08-18
+- Added visitor_uuid to the order created webhook
+- Added customer id to the setUserId tracking code call
+
 #### 1.8.2 - 2026-08-13
 - Added support for Wordpress 7.1
 

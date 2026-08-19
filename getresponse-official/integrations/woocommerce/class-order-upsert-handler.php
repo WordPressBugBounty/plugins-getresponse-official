@@ -207,7 +207,8 @@ class Order_Upsert_Handler {
 			$this->get_address( $order, 'shipping' ),
 			$this->get_address( $order, 'billing' ),
 			$order->get_date_created()->date_i18n( DATE_ATOM ),
-			null === $order->get_date_modified() ? null : $order->get_date_modified()->date_i18n( DATE_ATOM )
+			null === $order->get_date_modified() ? null : $order->get_date_modified()->date_i18n( DATE_ATOM ),
+			isset( $_COOKIE['gaVisitorUuid'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['gaVisitorUuid'] ) ) : null,
 		);
 
 		$this->gr_hook_service->send_callback( $this->gr_configuration, $model );

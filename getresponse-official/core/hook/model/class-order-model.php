@@ -25,6 +25,7 @@ class Order_Model implements Model {
 	private ?Address_Model $billing_address;
 	private string $created_at;
 	private ?string $updated_at;
+	private ?string $visitor_uuid;
 
 	/**
 	 * @param array<Line_Model> $lines
@@ -45,7 +46,8 @@ class Order_Model implements Model {
 		?Address_Model $shipping_address,
 		?Address_Model $billing_address,
 		string $created_at,
-		?string $updated_at
+		?string $updated_at,
+		?string $visitor_uuid = null
 	) {
 		$this->id               = $id;
 		$this->order_number     = $order_number;
@@ -63,6 +65,7 @@ class Order_Model implements Model {
 		$this->billing_address  = $billing_address;
 		$this->created_at       = $created_at;
 		$this->updated_at       = $updated_at;
+		$this->visitor_uuid     = $visitor_uuid;
 	}
 
 	public function to_api_callback(): array {
@@ -90,6 +93,7 @@ class Order_Model implements Model {
 			'billing_address'  => null !== $this->billing_address ? $this->billing_address->to_api_callback() : array(),
 			'created_at'       => $this->created_at,
 			'updated_at'       => $this->updated_at,
+			'visitor_uuid'     => $this->visitor_uuid,
 		);
 	}
 }
