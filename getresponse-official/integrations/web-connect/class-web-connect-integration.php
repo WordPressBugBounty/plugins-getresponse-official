@@ -89,7 +89,7 @@ class Web_Connect_Integration implements Integration {
 			$user = wp_get_current_user();
 
 			$ga_custom_code = ! empty( $user->user_email )
-				? "GrTracking('setUserId', '" . $user->user_email . "', " . wp_json_encode( array( 'externalId' => (string) $user->ID ) ) . ');'
+				? "GrTracking('setUserId', '" . $user->user_email . "', {externalId: '" . (string) $user->ID . "'});"
 				: "GrTracking('push');";
 
 			wp_register_script( 'gr-tracking-code', false, array(), GETRESPONSE_FOR_WP_VERSION, false );
