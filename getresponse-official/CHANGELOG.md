@@ -1,5 +1,8 @@
 Changelog
 =========
+#### 1.8.5 - 2026-09-04
+- Fixed live synchronization of WooCommerce customers for the ContactsOnly integration
+
 #### 1.8.4 - 2026-08-20
 - Passed the customer id as an externalId object in the setUserId tracking code call
 

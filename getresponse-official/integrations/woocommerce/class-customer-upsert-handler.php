@@ -31,7 +31,7 @@ class Customer_Upsert_Handler {
 
 	public function handle( WC_Customer $customer ): void {
 		try {
-			if ( ! $this->gr_configuration->is_full_ecommerce_live_sync_active() ) {
+			if ( ! $this->gr_configuration->is_contact_live_sync_active() ) {
 				return;
 			}
 
