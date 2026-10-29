@@ -10,6 +10,7 @@ use GetResponse\WordPress\Core\Gr_Configuration;
 use GetResponse\WordPress\Core\Hook\Gr_Hook_Exception;
 use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
 use GetResponse\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Core\User_Custom_Fields_Rest;
 use Psr\Log\LoggerInterface;
 use WC_Customer;
 
@@ -18,15 +19,18 @@ class Customer_Upsert_Handler {
 	private Gr_Configuration $gr_configuration;
 	private Gr_Hook_Service $gr_hook_service;
 	private LoggerInterface $logger;
+	private User_Custom_Fields_Rest $user_custom_fields;
 
 	public function __construct(
 		Gr_Configuration $gr_configuration,
 		Gr_Hook_Service $gr_hook_service,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		User_Custom_Fields_Rest $user_custom_fields
 	) {
-		$this->gr_configuration = $gr_configuration;
-		$this->gr_hook_service  = $gr_hook_service;
-		$this->logger           = $logger;
+		$this->gr_configuration   = $gr_configuration;
+		$this->gr_hook_service    = $gr_hook_service;
+		$this->logger             = $logger;
+		$this->user_custom_fields = $user_custom_fields;
 	}
 
 	public function handle( WC_Customer $customer ): void {
@@ -68,6 +72,9 @@ class Customer_Upsert_Handler {
 	}
 
 	private function prepare_custom_fields( WC_Customer $customer ): array {
+		$user_id            = $customer->get_id();
+		$user_custom_fields = $this->user_custom_fields->get_mapped_user_custom_fields( $user_id );
+
 		$custom_fields = array();
 
 		foreach ( $customer->get_billing() as $key => $value ) {
@@ -78,6 +85,6 @@ class Customer_Upsert_Handler {
 			$custom_fields[ 'shipping_' . $key ] = $value;
 		}
 
-		return $custom_fields;
+		return array_merge( $user_custom_fields, $custom_fields );
 	}
 }

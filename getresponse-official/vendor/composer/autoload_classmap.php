@@ -36,6 +36,7 @@ return array(
     'GetResponse\\WordPress\\Core\\Hook\\Model\\Product_Model' => $baseDir . '/core/hook/model/class-product-model.php',
     'GetResponse\\WordPress\\Core\\Hook\\Model\\User_Model' => $baseDir . '/core/hook/model/class-user-model.php',
     'GetResponse\\WordPress\\Core\\Hook\\Model\\Variant_Model' => $baseDir . '/core/hook/model/class-variant-model.php',
+    'GetResponse\\WordPress\\Core\\User_Custom_Fields_Rest' => $baseDir . '/core/class-user-custom-fields-rest.php',
     'GetResponse\\WordPress\\Core\\logger\\File_Logger' => $baseDir . '/core/logger/class-file-logger.php',
     'GetResponse\\WordPress\\Core\\logger\\Gr_Logger_Configuration' => $baseDir . '/core/logger/class-gr-logger-configuration.php',
     'GetResponse\\WordPress\\Integrations\\ContactForm7\\Contact_Form_7_Integration' => $baseDir . '/integrations/contact-form-7/class-contact-form-7-integration.php',

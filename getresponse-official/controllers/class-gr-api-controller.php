@@ -8,6 +8,7 @@ use GetResponse\WordPress\Core\Gr_Configuration;
 use GetResponse\WordPress\Core\Gr_Configuration_Validator;
 use GetResponse\WordPress\Core\Gr_Configuration_Validator_Exception;
 use GetResponse\WordPress\Core\Gr_Rest_Api_Service;
+use GetResponse\WordPress\Core\User_Custom_Fields_Rest;
 use GetResponse\WordPress\Core\logger\Gr_Logger_Configuration;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -77,6 +78,13 @@ class GR_API_Controller extends WP_REST_Controller {
 						'required' => true,
 						'type'     => 'bool',
 					),
+					Gr_Configuration::MAPPED_CONTACT_CUSTOM_FIELDS_KEY => array(
+						'required' => false,
+						'type'     => 'array',
+						'items'    => array(
+							'type' => 'string',
+						),
+					),
 				),
 			)
 		);
@@ -99,6 +107,18 @@ class GR_API_Controller extends WP_REST_Controller {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_sites' ),
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
+			)
+		);
+
+		register_rest_route(
+			'gr4wp/v1',
+			'/custom-fields/contacts',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_contact_custom_fields' ),
 				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
@@ -167,7 +187,7 @@ class GR_API_Controller extends WP_REST_Controller {
 
 		try {
 			$this->configuration_validator->validate(
-				$configuration->to_array(),
+				$configuration->to_verification_array(),
 				$request->get_headers()
 			);
 		} catch ( Gr_Configuration_Validator_Exception $e ) {
@@ -196,6 +216,12 @@ class GR_API_Controller extends WP_REST_Controller {
 
 	public function get_sites(): array {
 		return $this->gr_rest_api_service->get_sites();
+	}
+
+	public function get_contact_custom_fields(): array {
+		return array(
+			'custom_fields' => User_Custom_Fields_Rest::get_available_contact_custom_fields(),
+		);
 	}
 
 	public function get_logger_configuration(): array {

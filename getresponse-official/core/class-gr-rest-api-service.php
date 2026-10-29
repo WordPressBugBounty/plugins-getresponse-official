@@ -13,18 +13,28 @@ class Gr_Rest_Api_Service {
 	public const GR_MARKETING_CONSENT_TEXT     = 'gr4wp-marketing-consent-text';
 	public const GR_SHOP_ID                    = 'gr4wp-shop-id';
 	public const INTEGRATE_WITH_CONTACT_FORM_7 = 'gr4wp_integrate_with_contact_form_7';
+	public const MAPPED_CONTACT_CUSTOM_FIELDS  = 'gr4wp-mapped-contact-custom-fields';
 
 	public function __construct() {
 	}
 
 	public function get_configuration(): Gr_Configuration {
+		$web_connect_snippet           = (string) $this->get_gr_option( self::GR_WEB_CONNECT_SNIPPET );
+		$live_sync_url                 = (string) $this->get_gr_option( self::GR_LIVE_SYNC_URL );
+		$live_sync_type                = (string) $this->get_gr_option( self::GR_LIVE_SYNC_TYPE );
+		$marketing_consent_text        = (string) $this->get_gr_option( self::GR_MARKETING_CONSENT_TEXT );
+		$shop_id                       = (string) $this->get_gr_option( self::GR_SHOP_ID );
+		$integrate_with_contact_form_7 = (bool) $this->get_gr_option( self::INTEGRATE_WITH_CONTACT_FORM_7 );
+		$mapped_contact_custom_fields  = $this->get_gr_option( self::MAPPED_CONTACT_CUSTOM_FIELDS );
+
 		return new Gr_Configuration(
-			(string) $this->get_gr_option( self::GR_WEB_CONNECT_SNIPPET ),
-			(string) $this->get_gr_option( self::GR_LIVE_SYNC_URL ),
-			(string) $this->get_gr_option( self::GR_LIVE_SYNC_TYPE ),
-			(string) $this->get_gr_option( self::GR_MARKETING_CONSENT_TEXT ),
-			(string) $this->get_gr_option( self::GR_SHOP_ID ),
-			(bool) $this->get_gr_option( self::INTEGRATE_WITH_CONTACT_FORM_7 )
+			$web_connect_snippet,
+			$live_sync_url,
+			$live_sync_type,
+			$marketing_consent_text,
+			$shop_id,
+			$integrate_with_contact_form_7,
+			is_array( $mapped_contact_custom_fields ) ? $mapped_contact_custom_fields : array()
 		);
 	}
 
@@ -35,6 +45,7 @@ class Gr_Rest_Api_Service {
 		$this->update_gr_option( self::GR_MARKETING_CONSENT_TEXT, $configuration->get_marketing_consent_text() );
 		$this->update_gr_option( self::GR_SHOP_ID, $configuration->get_getresponse_shop_id() );
 		$this->update_gr_option( self::INTEGRATE_WITH_CONTACT_FORM_7, $configuration->integrate_with_contact_form_7() );
+		$this->update_gr_option( self::MAPPED_CONTACT_CUSTOM_FIELDS, $configuration->get_mapped_contact_custom_fields() );
 	}
 
 	public function clear_configuration(): void {
@@ -44,6 +55,7 @@ class Gr_Rest_Api_Service {
 		$this->update_gr_option( self::GR_MARKETING_CONSENT_TEXT, '' );
 		$this->update_gr_option( self::GR_SHOP_ID, '' );
 		$this->update_gr_option( self::INTEGRATE_WITH_CONTACT_FORM_7, '' );
+		$this->update_gr_option( self::MAPPED_CONTACT_CUSTOM_FIELDS, array() );
 	}
 
 	public function delete_configuration(): void {
@@ -53,6 +65,7 @@ class Gr_Rest_Api_Service {
 		$this->delete_gr_option( self::GR_MARKETING_CONSENT_TEXT );
 		$this->delete_gr_option( self::GR_SHOP_ID );
 		$this->delete_gr_option( self::INTEGRATE_WITH_CONTACT_FORM_7 );
+		$this->delete_gr_option( self::MAPPED_CONTACT_CUSTOM_FIELDS );
 	}
 
 	public function get_sites(): array {

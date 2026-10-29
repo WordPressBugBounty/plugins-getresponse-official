@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace GetResponse\WordPress\Core\Hook\Model;
 
 class Variant_Model implements Model {
+	public const AVAILABILITY_IN_STOCK     = 'in_stock';
+	public const AVAILABILITY_OUT_OF_STOCK = 'out_of_stock';
+	public const AVAILABILITY_BACKORDER    = 'backorder';
 
 	private int $id;
 	private string $name;
@@ -14,6 +17,7 @@ class Variant_Model implements Model {
 	private ?float $previous_price;
 	private ?float $previous_price_tax;
 	private int $quantity;
+	private string $availability;
 	private string $url;
 	private ?int $position;
 	private ?int $barcode;
@@ -28,6 +32,7 @@ class Variant_Model implements Model {
 
 	/**
 	 * @param array<Image_Model> $images
+	 * @param self::AVAILABILITY_IN_STOCK|self::AVAILABILITY_OUT_OF_STOCK|self::AVAILABILITY_BACKORDER $availability
 	 */
 	public function __construct(
 		int $id,
@@ -38,6 +43,7 @@ class Variant_Model implements Model {
 		?float $previous_price,
 		?float $previous_price_tax,
 		int $quantity,
+		string $availability,
 		string $url,
 		?int $position,
 		?int $barcode,
@@ -57,6 +63,7 @@ class Variant_Model implements Model {
 		$this->previous_price     = $previous_price;
 		$this->previous_price_tax = $previous_price_tax;
 		$this->quantity           = $quantity;
+		$this->availability       = $availability;
 		$this->url                = $url;
 		$this->position           = $position;
 		$this->barcode            = $barcode;
@@ -84,6 +91,7 @@ class Variant_Model implements Model {
 			'previous_price'     => $this->previous_price,
 			'previous_price_tax' => $this->previous_price_tax,
 			'quantity'           => $this->quantity,
+			'availability'       => $this->availability,
 			'url'                => $this->url,
 			'position'           => $this->position,
 			'barcode'            => $this->barcode,

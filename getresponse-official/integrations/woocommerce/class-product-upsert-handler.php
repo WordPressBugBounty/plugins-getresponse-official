@@ -98,26 +98,7 @@ class Product_Upsert_Handler {
 		foreach ( $product->get_available_variations() as $available_variation ) {
 			$variation = new WC_Product_Variation( $available_variation['variation_id'] );
 
-			$variants[] = new Variant_Model(
-				$variation->get_id(),
-				$variation->get_name(),
-				$variation->get_sku(),
-				round( (float) $variation->get_regular_price(), 2 ),
-				round( (float) $variation->get_regular_price(), 2 ),
-				null,
-				null,
-				(int) $variation->get_stock_quantity(),
-				$variation->get_permalink(),
-				null,
-				null,
-				$this->reduce_description( $variation->get_short_description(), self::MAX_DESC_LENGTH ),
-				$this->reduce_description( $variation->get_description(), self::MAX_DESC_LENGTH ),
-				$this->get_product_images( $variation ),
-				$variation->get_status(),
-				'' === $variation->get_sale_price() ? null : round( (float) $variation->get_sale_price(), 2 ),
-				null === $variation->get_date_on_sale_from() ? null : $variation->get_date_on_sale_from()->date_i18n( DATE_ATOM ),
-				null === $variation->get_date_on_sale_to() ? null : $variation->get_date_on_sale_to()->date_i18n( DATE_ATOM )
-			);
+			$variants[] = $this->create_variant_model( $variation );
 		}
 
 		if ( empty( $variants ) ) {
@@ -128,7 +109,11 @@ class Product_Upsert_Handler {
 	}
 
 	private function get_simple_product_variant( WC_Product $product ): array {
-		$variant = new Variant_Model(
+		return array( $this->create_variant_model( $product ) );
+	}
+
+	private function create_variant_model( WC_Product $product ): Variant_Model {
+		return new Variant_Model(
 			$product->get_id(),
 			$product->get_name(),
 			$product->get_sku(),
@@ -137,6 +122,7 @@ class Product_Upsert_Handler {
 			null,
 			null,
 			(int) $product->get_stock_quantity(),
+			$this->get_product_availability( $product ),
 			$product->get_permalink(),
 			null,
 			null,
@@ -148,8 +134,19 @@ class Product_Upsert_Handler {
 			null === $product->get_date_on_sale_from() ? null : $product->get_date_on_sale_from()->date_i18n( DATE_ATOM ),
 			null === $product->get_date_on_sale_to() ? null : $product->get_date_on_sale_to()->date_i18n( DATE_ATOM )
 		);
+	}
 
-		return array( $variant );
+	private function get_product_availability( WC_Product $product ): string {
+		switch ( $product->get_stock_status() ) {
+			case 'instock':
+			case 'lowstock':
+				return Variant_Model::AVAILABILITY_IN_STOCK;
+			case 'onbackorder':
+				return Variant_Model::AVAILABILITY_BACKORDER;
+			case 'outofstock':
+			default:
+				return Variant_Model::AVAILABILITY_OUT_OF_STOCK;
+		}
 	}
 
 	private function reduce_description( string $description, int $max_length ): string {

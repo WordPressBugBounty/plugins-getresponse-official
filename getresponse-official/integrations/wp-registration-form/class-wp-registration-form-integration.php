@@ -16,6 +16,7 @@ use GetResponse\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
 use GetResponse\WordPress\Core\Gr_User_Marketing_Consent_Buffer_Exception;
 use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
 use GetResponse\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Core\User_Custom_Fields_Rest;
 use GetResponse\WordPress\Integrations\Integration;
 use Psr\Log\LoggerInterface;
 
@@ -24,11 +25,18 @@ class WP_Registration_Form_Integration implements Integration {
 	private Gr_Configuration $gr_configuration;
 	private Gr_Hook_Service $gr_hook_service;
 	private LoggerInterface $logger;
+	private User_Custom_Fields_Rest $user_custom_fields;
 
-	public function __construct( Gr_Configuration $gr_configuration, Gr_Hook_Service $gr_hook_service, LoggerInterface $logger ) {
-		$this->gr_configuration = $gr_configuration;
-		$this->gr_hook_service  = $gr_hook_service;
-		$this->logger           = $logger;
+	public function __construct(
+		Gr_Configuration $gr_configuration,
+		Gr_Hook_Service $gr_hook_service,
+		LoggerInterface $logger,
+		User_Custom_Fields_Rest $user_custom_fields
+	) {
+		$this->gr_configuration   = $gr_configuration;
+		$this->gr_hook_service    = $gr_hook_service;
+		$this->logger             = $logger;
+		$this->user_custom_fields = $user_custom_fields;
 	}
 
 	public function init(): void {
@@ -61,7 +69,9 @@ class WP_Registration_Form_Integration implements Integration {
 				return;
 			}
 
-			$model = new User_Model( $user_id, $user_data['user_email'], $gr_marketing_consent );
+			$custom_fields = $this->user_custom_fields->get_mapped_user_custom_fields( $user_id );
+
+			$model = new User_Model( $user_id, $user_data['user_email'], $gr_marketing_consent, null, null, null, $custom_fields );
 
 			$this->gr_hook_service->send_callback( $this->gr_configuration, $model );
 		} catch ( Exception $e ) {

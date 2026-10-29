@@ -16,6 +16,7 @@ use GetResponse\WordPress\Core\Hook\Model\Address_Model;
 use GetResponse\WordPress\Core\Hook\Model\Line_Model;
 use GetResponse\WordPress\Core\Hook\Model\Order_Model;
 use GetResponse\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Core\User_Custom_Fields_Rest;
 use Psr\Log\LoggerInterface;
 use WC_Order;
 use WC_Order_Item_Product;
@@ -26,17 +27,20 @@ class Order_Upsert_Handler {
 	private Gr_Hook_Service $gr_hook_service;
 	private Gr_Cart_Service $gr_cart_service;
 	private LoggerInterface $logger;
+	private User_Custom_Fields_Rest $user_custom_fields;
 
 	public function __construct(
 		Gr_Configuration $gr_configuration,
 		Gr_Hook_Service $gr_hook_service,
 		Gr_Cart_Service $gr_cart_service,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		User_Custom_Fields_Rest $user_custom_fields
 	) {
-		$this->gr_configuration = $gr_configuration;
-		$this->gr_hook_service  = $gr_hook_service;
-		$this->gr_cart_service  = $gr_cart_service;
-		$this->logger           = $logger;
+		$this->gr_configuration   = $gr_configuration;
+		$this->gr_hook_service    = $gr_hook_service;
+		$this->gr_cart_service    = $gr_cart_service;
+		$this->logger             = $logger;
+		$this->user_custom_fields = $user_custom_fields;
 	}
 
 	public function handle( WC_Order $order ): void {
@@ -131,27 +135,30 @@ class Order_Upsert_Handler {
 			$first_name,
 			$last_name,
 			$address_model,
-			array(
-				'billing_first_name'  => $billing_first_name,
-				'billing_last_name'   => $billing_last_name,
-				'billing_company'     => $billing_company,
-				'billing_address_1'   => $billing_address_1,
-				'billing_address_2'   => $billing_address_2,
-				'billing_city'        => $billing_city,
-				'billing_postcode'    => $billing_postcode,
-				'billing_country'     => $billing_country,
-				'billing_state'       => $billing_state,
-				'billing_phone'       => $billing_phone,
-				'shipping_first_name' => $user_meta['shipping_first_name'][0] ?? '',
-				'shipping_last_name'  => $user_meta['shipping_last_name'][0] ?? '',
-				'shipping_company'    => $user_meta['shipping_company'][0] ?? '',
-				'shipping_address_1'  => $user_meta['shipping_address_1'][0] ?? '',
-				'shipping_address_2'  => $user_meta['shipping_address_2'][0] ?? '',
-				'shipping_city'       => $user_meta['shipping_city'][0] ?? '',
-				'shipping_postcode'   => $user_meta['shipping_postcode'][0] ?? '',
-				'shipping_country'    => $user_meta['shipping_country'][0] ?? '',
-				'shipping_state'      => $user_meta['shipping_state'][0] ?? '',
-				'shipping_phone'      => $user_meta['shipping_phone'][0] ?? '',
+			array_merge(
+				$this->user_custom_fields->get_mapped_user_custom_fields( $customer_id ),
+				array(
+					'billing_first_name'  => $billing_first_name,
+					'billing_last_name'   => $billing_last_name,
+					'billing_company'     => $billing_company,
+					'billing_address_1'   => $billing_address_1,
+					'billing_address_2'   => $billing_address_2,
+					'billing_city'        => $billing_city,
+					'billing_postcode'    => $billing_postcode,
+					'billing_country'     => $billing_country,
+					'billing_state'       => $billing_state,
+					'billing_phone'       => $billing_phone,
+					'shipping_first_name' => $user_meta['shipping_first_name'][0] ?? '',
+					'shipping_last_name'  => $user_meta['shipping_last_name'][0] ?? '',
+					'shipping_company'    => $user_meta['shipping_company'][0] ?? '',
+					'shipping_address_1'  => $user_meta['shipping_address_1'][0] ?? '',
+					'shipping_address_2'  => $user_meta['shipping_address_2'][0] ?? '',
+					'shipping_city'       => $user_meta['shipping_city'][0] ?? '',
+					'shipping_postcode'   => $user_meta['shipping_postcode'][0] ?? '',
+					'shipping_country'    => $user_meta['shipping_country'][0] ?? '',
+					'shipping_state'      => $user_meta['shipping_state'][0] ?? '',
+					'shipping_phone'      => $user_meta['shipping_phone'][0] ?? '',
+				)
 			)
 		);
 	}

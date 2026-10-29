@@ -48,7 +48,8 @@ class Getresponse_For_Wp {
 			$this->extend_api();
 			$this->register_marketing_consent_meta();
 			$this->register_updated_at_meta();
-			$this->register_integrations();
+			$user_custom_fields = $this->register_user_custom_fields_rest();
+			$this->register_integrations( $user_custom_fields );
 			$this->check_if_old_plugin_is_installed();
 			add_filter( 'rest_user_query', array( $this, 'add_updated_at_filter' ), 10, 2 );
 			add_action( 'admin_init', array( $this, 'run_migration_if_not_executed' ) );
@@ -106,7 +107,7 @@ class Getresponse_For_Wp {
 		);
 	}
 
-	private function register_integrations(): void {
+	private function register_integrations( User_Custom_Fields_Rest $user_custom_fields ): void {
 
 		$gr_hook_client   = new Gr_Hook_Client( get_home_url() );
 		$rest_api_service = new Gr_Rest_Api_Service();
@@ -116,9 +117,9 @@ class Getresponse_For_Wp {
 		$buffer_service   = new Web_Connect_Buffer_Service();
 
 		( new Contact_Form_7_Integration( $gr_configuration, $gr_hook_service, $this->logger ) )->init();
-		( new WP_Registration_Form_Integration( $gr_configuration, $gr_hook_service, $this->logger ) )->init();
-		( new Woocommerce_Integration( $gr_configuration, $gr_hook_service, $gr_cart_service, $this->logger ) )->init();
-		( new WP_User_Profile_Integration( $gr_configuration, $gr_hook_service, $this->logger ) )->init();
+		( new WP_Registration_Form_Integration( $gr_configuration, $gr_hook_service, $this->logger, $user_custom_fields ) )->init();
+		( new Woocommerce_Integration( $gr_configuration, $gr_hook_service, $gr_cart_service, $this->logger, $user_custom_fields ) )->init();
+		( new WP_User_Profile_Integration( $gr_configuration, $gr_hook_service, $this->logger, $user_custom_fields ) )->init();
 		( new Web_Connect_Integration(
 			$gr_configuration,
 			new Cart_Service( $gr_configuration, $gr_cart_service, $buffer_service ),
@@ -219,6 +220,14 @@ class Getresponse_For_Wp {
 				),
 			)
 		);
+	}
+
+	private function register_user_custom_fields_rest(): User_Custom_Fields_Rest {
+		$configuration      = ( new Gr_Rest_Api_Service() )->get_configuration();
+		$user_custom_fields = new User_Custom_Fields_Rest( $configuration->get_mapped_contact_custom_fields() );
+		$user_custom_fields->init();
+
+		return $user_custom_fields;
 	}
 
 

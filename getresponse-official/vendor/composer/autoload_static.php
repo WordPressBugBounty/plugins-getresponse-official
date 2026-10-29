@@ -51,6 +51,7 @@ class ComposerStaticInitab1f3f2192e7f7197756605c5b625a81
         'GetResponse\\WordPress\\Core\\Hook\\Model\\Product_Model' => __DIR__ . '/../..' . '/core/hook/model/class-product-model.php',
         'GetResponse\\WordPress\\Core\\Hook\\Model\\User_Model' => __DIR__ . '/../..' . '/core/hook/model/class-user-model.php',
         'GetResponse\\WordPress\\Core\\Hook\\Model\\Variant_Model' => __DIR__ . '/../..' . '/core/hook/model/class-variant-model.php',
+        'GetResponse\\WordPress\\Core\\User_Custom_Fields_Rest' => __DIR__ . '/../..' . '/core/class-user-custom-fields-rest.php',
         'GetResponse\\WordPress\\Core\\logger\\File_Logger' => __DIR__ . '/../..' . '/core/logger/class-file-logger.php',
         'GetResponse\\WordPress\\Core\\logger\\Gr_Logger_Configuration' => __DIR__ . '/../..' . '/core/logger/class-gr-logger-configuration.php',
         'GetResponse\\WordPress\\Integrations\\ContactForm7\\Contact_Form_7_Integration' => __DIR__ . '/../..' . '/integrations/contact-form-7/class-contact-form-7-integration.php',

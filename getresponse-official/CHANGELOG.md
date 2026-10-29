@@ -1,5 +1,9 @@
 Changelog
 =========
+#### 1.9.0 - 2026-10-29
+- Add support for custom fields
+- Added product availability to WooCommerce variant webhooks
+
 #### 1.8.5 - 2026-09-04
 - Fixed live synchronization of WooCommerce customers for the ContactsOnly integration
 

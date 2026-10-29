@@ -21,6 +21,7 @@ class Gr_Configuration {
 	public const MARKETING_CONSENT_TEXT_KEY           = 'marketingConsentText';
 	public const GETRESPONSE_SHOP_ID                  = 'grShopId';
 	public const INTEGRATE_WITH_CONTACT_FORM_7        = 'integrateWithContactForm7';
+	public const MAPPED_CONTACT_CUSTOM_FIELDS_KEY     = 'mappedContactCustomFields';
 
 	private string $web_connect_snippet;
 	private string $live_sync_url;
@@ -28,14 +29,16 @@ class Gr_Configuration {
 	private string $marketing_consent_text;
 	private string $getresponse_shop_id;
 	private bool $integrate_with_contact_form_7;
+	private array $mapped_contact_custom_fields;
 
-	public function __construct( string $web_connect_snippet, string $live_sync_url, string $live_sync_type, string $marketing_consent_text, string $getresponse_shop_id, bool $integrate_with_contact_form_7 ) {
+	public function __construct( string $web_connect_snippet, string $live_sync_url, string $live_sync_type, string $marketing_consent_text, string $getresponse_shop_id, bool $integrate_with_contact_form_7, array $mapped_contact_custom_fields = array() ) {
 		$this->web_connect_snippet           = $web_connect_snippet;
 		$this->live_sync_url                 = $live_sync_url;
 		$this->live_sync_type                = $live_sync_type;
 		$this->marketing_consent_text        = $marketing_consent_text;
 		$this->getresponse_shop_id           = $getresponse_shop_id;
 		$this->integrate_with_contact_form_7 = $integrate_with_contact_form_7;
+		$this->mapped_contact_custom_fields  = $mapped_contact_custom_fields;
 	}
 
 	public static function make_from_array( array $params ): self {
@@ -46,6 +49,7 @@ class Gr_Configuration {
 			! empty( $params[ self::MARKETING_CONSENT_TEXT_KEY ] ) ? $params[ self::MARKETING_CONSENT_TEXT_KEY ] : '',
 			! empty( $params[ self::GETRESPONSE_SHOP_ID ] ) ? $params[ self::GETRESPONSE_SHOP_ID ] : '',
 			empty( $params[ self::INTEGRATE_WITH_CONTACT_FORM_7 ] ) ? false : (bool) $params[ self::INTEGRATE_WITH_CONTACT_FORM_7 ],
+			isset( $params[ self::MAPPED_CONTACT_CUSTOM_FIELDS_KEY ] ) && is_array( $params[ self::MAPPED_CONTACT_CUSTOM_FIELDS_KEY ] ) ? $params[ self::MAPPED_CONTACT_CUSTOM_FIELDS_KEY ] : array(),
 		);
 	}
 
@@ -68,7 +72,23 @@ class Gr_Configuration {
 		return $this->getresponse_shop_id;
 	}
 
+	public function get_mapped_contact_custom_fields(): array {
+		return $this->mapped_contact_custom_fields;
+	}
+
 	public function to_array(): array {
+		return array_merge(
+			$this->to_verification_array(),
+			array(
+				self::MAPPED_CONTACT_CUSTOM_FIELDS_KEY => $this->get_mapped_contact_custom_fields(),
+			)
+		);
+	}
+
+	/**
+	 * Return only the configuration fields covered by the existing signature verification contract.
+	 */
+	public function to_verification_array(): array {
 		return array(
 			self::WEB_CONNECT_SNIPPET_KEY       => $this->get_web_connect_snippet(),
 			self::LIVE_SYNC_URL_KEY             => $this->get_live_sync_url(),

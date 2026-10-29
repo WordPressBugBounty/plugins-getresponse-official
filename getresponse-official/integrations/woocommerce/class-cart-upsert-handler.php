@@ -13,6 +13,7 @@ use GetResponse\WordPress\Core\Hook\Model\Address_Model;
 use GetResponse\WordPress\Core\Hook\Model\Cart_Model;
 use GetResponse\WordPress\Core\Hook\Model\Line_Model;
 use GetResponse\WordPress\Core\Hook\Model\User_Model;
+use GetResponse\WordPress\Core\User_Custom_Fields_Rest;
 use Psr\Log\LoggerInterface;
 use WC_Cart;
 
@@ -22,17 +23,20 @@ class Cart_Upsert_Handler {
 	private Gr_Hook_Service $gr_hook_service;
 	private Gr_Cart_Service $gr_cart_service;
 	private LoggerInterface $logger;
+	private User_Custom_Fields_Rest $user_custom_fields;
 
 	public function __construct(
 		Gr_Configuration $gr_configuration,
 		Gr_Hook_Service $gr_hook_service,
 		Gr_Cart_Service $gr_cart_service,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		User_Custom_Fields_Rest $user_custom_fields
 	) {
-		$this->gr_configuration = $gr_configuration;
-		$this->gr_hook_service  = $gr_hook_service;
-		$this->gr_cart_service  = $gr_cart_service;
-		$this->logger           = $logger;
+		$this->gr_configuration   = $gr_configuration;
+		$this->gr_hook_service    = $gr_hook_service;
+		$this->gr_cart_service    = $gr_cart_service;
+		$this->logger             = $logger;
+		$this->user_custom_fields = $user_custom_fields;
 	}
 
 	public function handle( WC_Cart $cart ): void {
@@ -74,7 +78,8 @@ class Cart_Upsert_Handler {
 			$marketing_consent,
 			$customer->get_first_name(),
 			$customer->get_last_name(),
-			$address_model
+			$address_model,
+			$this->user_custom_fields->get_mapped_user_custom_fields( $customer->get_id() )
 		);
 	}
 

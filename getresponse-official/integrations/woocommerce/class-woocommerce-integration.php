@@ -13,6 +13,7 @@ use GetResponse\WordPress\Core\Gr_Configuration;
 use GetResponse\WordPress\Core\Gr_Nonce_Field;
 use GetResponse\WordPress\Core\Gr_User_Marketing_Consent_Buffer;
 use GetResponse\WordPress\Core\Hook\Gr_Hook_Service;
+use GetResponse\WordPress\Core\User_Custom_Fields_Rest;
 use GetResponse\WordPress\Integrations\Integration;
 use Psr\Log\LoggerInterface;
 use WC_Customer;
@@ -26,17 +27,20 @@ class Woocommerce_Integration implements Integration {
 	private Gr_Hook_Service $gr_hook_service;
 	private Gr_Cart_Service $gr_cart_service;
 	private LoggerInterface $logger;
+	private User_Custom_Fields_Rest $user_custom_fields;
 
 	public function __construct(
 		Gr_Configuration $gr_configuration,
 		Gr_Hook_Service $gr_hook_service,
 		Gr_Cart_Service $gr_cart_service,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		User_Custom_Fields_Rest $user_custom_fields
 	) {
-		$this->gr_configuration = $gr_configuration;
-		$this->gr_hook_service  = $gr_hook_service;
-		$this->gr_cart_service  = $gr_cart_service;
-		$this->logger           = $logger;
+		$this->gr_configuration   = $gr_configuration;
+		$this->gr_hook_service    = $gr_hook_service;
+		$this->gr_cart_service    = $gr_cart_service;
+		$this->logger             = $logger;
+		$this->user_custom_fields = $user_custom_fields;
 	}
 
 	public static function is_woo_commerce_installed(): bool {
@@ -102,7 +106,8 @@ class Woocommerce_Integration implements Integration {
 			$this->gr_configuration,
 			$this->gr_hook_service,
 			$this->gr_cart_service,
-			$this->logger
+			$this->logger,
+			$this->user_custom_fields
 		);
 
 		$handler->handle( $order );
@@ -139,7 +144,8 @@ class Woocommerce_Integration implements Integration {
 			$this->gr_configuration,
 			$this->gr_hook_service,
 			$this->gr_cart_service,
-			$this->logger
+			$this->logger,
+			$this->user_custom_fields
 		);
 		$handler->handle( $cart );
 	}
@@ -232,7 +238,8 @@ class Woocommerce_Integration implements Integration {
 		$handler = new Customer_Upsert_Handler(
 			$this->gr_configuration,
 			$this->gr_hook_service,
-			$this->logger
+			$this->logger,
+			$this->user_custom_fields
 		);
 
 		$handler->handle( $customer );
@@ -249,7 +256,8 @@ class Woocommerce_Integration implements Integration {
 		$handler = new Customer_Upsert_Handler(
 			$this->gr_configuration,
 			$this->gr_hook_service,
-			$this->logger
+			$this->logger,
+			$this->user_custom_fields
 		);
 
 		$handler->handle( $customer );
